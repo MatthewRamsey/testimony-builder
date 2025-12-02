@@ -7,6 +7,8 @@ import { PDFProvider } from '@/infrastructure/export/providers/PDFProvider'
 import { AuthenticationError, AuthorizationError, NotFoundError, RateLimitError } from '@/lib/errors'
 import { z } from 'zod'
 
+export const dynamic = 'force-dynamic'
+
 const requestSchema = z.object({
   testimonyId: z.string().uuid(),
 })

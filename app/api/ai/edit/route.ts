@@ -8,6 +8,8 @@ import { SubscriptionService } from '@/domain/subscription/services/Subscription
 import { AuthenticationError, AuthorizationError, NotFoundError, RateLimitError } from '@/lib/errors'
 import { z } from 'zod'
 
+export const dynamic = 'force-dynamic'
+
 const requestSchema = z.object({
   testimonyId: z.string().uuid(),
   prompt: z.string().min(1, 'Prompt is required'),

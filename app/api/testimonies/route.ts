@@ -5,6 +5,8 @@ import { SupabaseTestimonyRepository } from '@/infrastructure/database/supabase/
 import { ValidationError, AuthenticationError } from '@/lib/errors'
 import { z } from 'zod'
 
+export const dynamic = 'force-dynamic'
+
 const createTestimonySchema = z.object({
   title: z.string().min(1).max(200),
   framework_type: z.enum([

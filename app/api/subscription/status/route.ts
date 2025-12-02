@@ -3,6 +3,8 @@ import { requireAuth } from '@/lib/auth/middleware'
 import { SubscriptionService } from '@/domain/subscription/services/SubscriptionService'
 import { AuthenticationError } from '@/lib/errors'
 
+export const dynamic = 'force-dynamic'
+
 export async function GET(request: NextRequest) {
   try {
     const user = await requireAuth(request)

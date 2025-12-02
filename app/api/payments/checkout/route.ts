@@ -5,6 +5,8 @@ import { StripeProvider } from '@/infrastructure/payment/providers/StripeProvide
 import { SubscriptionService } from '@/domain/subscription/services/SubscriptionService'
 import { AuthenticationError } from '@/lib/errors'
 
+export const dynamic = 'force-dynamic'
+
 export async function POST(request: NextRequest) {
   try {
     const user = await requireAuth(request)

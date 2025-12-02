@@ -3,6 +3,8 @@ import { requireAuth } from '@/lib/auth/middleware'
 import { createClient } from '@/lib/supabase/server'
 import { AuthenticationError, AuthorizationError, NotFoundError } from '@/lib/errors'
 
+export const dynamic = 'force-dynamic'
+
 export async function DELETE(
   request: NextRequest,
   { params }: { params: { id: string } }
