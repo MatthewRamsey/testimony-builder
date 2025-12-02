@@ -22,11 +22,9 @@ export async function GET(request: NextRequest) {
       
       // Copy all cookies from auth response to redirect response
       response.cookies.getAll().forEach((cookie) => {
-        redirectResponse.cookies.set({
-          name: cookie.name,
-          value: cookie.value,
-          ...cookie.attributes,
-        })
+        // Next.js ResponseCookie only exposes name and value here, so we copy those.
+        // Supabase SSR sets secure attributes internally when creating the cookies.
+        redirectResponse.cookies.set(cookie.name, cookie.value)
       })
       
       return redirectResponse
