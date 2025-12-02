@@ -1,11 +1,17 @@
 import { createClient } from '@/lib/supabase/server'
 import { ValidationError, RateLimitError } from '@/lib/errors'
 import { z } from 'zod'
+import type { SupabaseClient } from '@supabase/supabase-js'
 
 const emailSchema = z.string().email('Invalid email address')
 
 export class UserService {
-  async sendMagicLink(email: string): Promise<void> {
+  /**
+   * Send a magic link email to the user
+   * @param email - User's email address
+   * @param supabaseClient - Optional Supabase client (for route handlers, pass route-handler client)
+   */
+  async sendMagicLink(email: string, supabaseClient?: SupabaseClient): Promise<void> {
     // Validate email
     const validationResult = emailSchema.safeParse(email)
     if (!validationResult.success) {
@@ -22,7 +28,7 @@ export class UserService {
     //   throw new RateLimitError('Rate limit exceeded. Please try again later.')
     // }
 
-    const supabase = await createClient()
+    const supabase = supabaseClient || await createClient()
     
     const { error } = await supabase.auth.signInWithOtp({
       email,

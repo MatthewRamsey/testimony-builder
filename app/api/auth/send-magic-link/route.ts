@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { UserService } from '@/domain/user/services/UserService'
 import { ValidationError, RateLimitError } from '@/lib/errors'
+import { createClient } from '@/lib/supabase/route-handler'
 import { z } from 'zod'
 
 const requestSchema = z.object({
@@ -12,8 +13,10 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { email } = requestSchema.parse(body)
 
+    // Create route-handler client for use in API route
+    const supabase = createClient(request)
     const userService = new UserService()
-    await userService.sendMagicLink(email)
+    await userService.sendMagicLink(email, supabase)
 
     return NextResponse.json(
       { success: true, message: 'Magic link sent' },

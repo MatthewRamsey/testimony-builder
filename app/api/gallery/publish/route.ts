@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { requireAuth } from '@/lib/auth/middleware'
 import { TestimonyService } from '@/domain/testimony/services/TestimonyService'
 import { SupabaseTestimonyRepository } from '@/infrastructure/database/supabase/repositories/SupabaseTestimonyRepository'
-import { createClient } from '@/lib/supabase/server'
+import { createClient } from '@/lib/supabase/route-handler'
 import { AuthenticationError, AuthorizationError, NotFoundError, RateLimitError } from '@/lib/errors'
 import { z } from 'zod'
 
@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
     // }
 
     // Make testimony public and create gallery entry
-    const supabase = await createClient()
+    const supabase = createClient(request)
     
     // Update testimony to be public
     await supabase

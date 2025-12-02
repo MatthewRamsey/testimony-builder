@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { requireAuth } from '@/lib/auth/middleware'
-import { createClient } from '@/lib/supabase/server'
+import { createClient } from '@/lib/supabase/route-handler'
 import { AuthenticationError, AuthorizationError, NotFoundError } from '@/lib/errors'
 
 export const dynamic = 'force-dynamic'
@@ -11,7 +11,7 @@ export async function DELETE(
 ) {
   try {
     const user = await requireAuth(request)
-    const supabase = await createClient()
+    const supabase = createClient(request)
 
     // Check if user owns the gallery entry
     const { data: entry, error: fetchError } = await supabase
