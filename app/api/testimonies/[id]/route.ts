@@ -125,7 +125,7 @@ export async function DELETE(
 
     await service.delete(user.id, params.id)
 
-    return NextResponse.json(null, { status: 204 })
+    return new NextResponse(null, { status: 204 })
   } catch (error) {
     if (error instanceof AuthenticationError) {
       return NextResponse.json(
