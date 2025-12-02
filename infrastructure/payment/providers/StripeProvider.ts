@@ -9,7 +9,7 @@ export class StripeProvider implements IPaymentProvider {
       throw new Error('STRIPE_SECRET_KEY is not set')
     }
     this.stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-      apiVersion: '2024-06-20',
+      apiVersion: '2023-10-16',
     })
   }
 

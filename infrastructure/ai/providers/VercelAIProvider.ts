@@ -67,7 +67,7 @@ export class VercelAIProvider implements IAiProvider {
 
     try {
       const { text } = await generateText({
-        model: openai('gpt-4o-mini'),
+        model: openai('gpt-4o-mini') as any,
         system: systemPrompt,
         prompt: userPrompt,
         maxTokens: 1000,

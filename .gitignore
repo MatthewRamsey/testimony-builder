@@ -35,3 +35,12 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# documentation (not needed in repo)
+plan.md
+PROJECT_SUMMARY.md
+TDD_PLAN.md
+*.md.bak
+
+# setup scripts (one-time use)
+setup-github.sh
+

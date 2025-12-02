@@ -47,7 +47,7 @@ export default function LoginPage() {
             Sign in to your account
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
-            We'll send you a magic link to sign in
+            We&apos;ll send you a magic link to sign in
           </p>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>

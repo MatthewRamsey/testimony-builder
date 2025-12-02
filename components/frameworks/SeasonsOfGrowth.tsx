@@ -47,7 +47,7 @@ export function SeasonsOfGrowth({ value, onChange }: SeasonsOfGrowthProps) {
 
       {seasons.length === 0 && (
         <p className="text-sm text-gray-500 text-center py-8">
-          Click "Add Season" to start documenting your seasons of growth
+          Click &quot;Add Season&quot; to start documenting your seasons of growth
         </p>
       )}
 

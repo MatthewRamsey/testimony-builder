@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
     const repository = new SupabaseTestimonyRepository()
     const service = new TestimonyService(repository)
 
-    const testimony = await service.create(user.id, data)
+    const testimony = await service.create(user.id, data as any)
 
     return NextResponse.json(testimony, { status: 201 })
   } catch (error) {

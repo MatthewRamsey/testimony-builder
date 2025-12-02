@@ -85,7 +85,7 @@ export default function DashboardPage() {
 
         {testimonies.length === 0 ? (
           <div className="bg-white shadow rounded-lg p-12 text-center">
-            <p className="text-gray-600 mb-4">You haven't created any testimonies yet.</p>
+            <p className="text-gray-600 mb-4">You haven&apos;t created any testimonies yet.</p>
             <Link
               href="/create"
               className="inline-block rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500"

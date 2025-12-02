@@ -144,7 +144,7 @@ function TestimonyPDF({ testimony }: { testimony: Testimony }) {
 
 export class PDFProvider implements IExportProvider {
   async generate(testimony: Testimony): Promise<Buffer> {
-    const doc = React.createElement(TestimonyPDF, { testimony })
+    const doc = <TestimonyPDF testimony={testimony} />
     const buffer = await renderToBuffer(doc)
     return buffer
   }

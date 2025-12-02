@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
     const pdfBuffer = await exportService.exportToPDF(testimony)
 
     // Return PDF
-    return new NextResponse(pdfBuffer, {
+    return new NextResponse(Buffer.from(pdfBuffer), {
       status: 200,
       headers: {
         'Content-Type': 'application/pdf',

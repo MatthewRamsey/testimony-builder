@@ -47,7 +47,7 @@ export function LifeTimeline({ value, onChange }: LifeTimelineProps) {
 
       {milestones.length === 0 && (
         <p className="text-sm text-gray-500 text-center py-8">
-          Click "Add Milestone" to start building your timeline
+          Click &quot;Add Milestone&quot; to start building your timeline
         </p>
       )}
 

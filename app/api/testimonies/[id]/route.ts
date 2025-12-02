@@ -65,7 +65,7 @@ export async function PUT(
     const repository = new SupabaseTestimonyRepository()
     const service = new TestimonyService(repository)
 
-    const testimony = await service.update(user.id, params.id, data)
+    const testimony = await service.update(user.id, params.id, data as any)
 
     return NextResponse.json(testimony, { status: 200 })
   } catch (error) {
