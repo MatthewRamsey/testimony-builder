@@ -2,6 +2,21 @@ import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function updateSession(request: NextRequest) {
+  // If there's a code parameter in the URL, redirect to callback to handle it
+  const url = new URL(request.url)
+  const code = url.searchParams.get('code')
+
+  if (code && !request.nextUrl.pathname.startsWith('/auth/callback')) {
+    const redirectUrl = new URL('/auth/callback', request.url)
+    redirectUrl.searchParams.set('code', code)
+    // Preserve any 'next' parameter for post-auth redirect
+    const next = url.searchParams.get('next')
+    if (next) {
+      redirectUrl.searchParams.set('next', next)
+    }
+    return NextResponse.redirect(redirectUrl)
+  }
+
   let response = NextResponse.next({
     request: {
       headers: request.headers,
