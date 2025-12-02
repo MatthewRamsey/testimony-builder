@@ -3,36 +3,27 @@
  */
 import { GET, PUT, DELETE } from '../../../testimonies/[id]/route'
 import { NextRequest } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { requireAuth } from '@/lib/auth/middleware'
 import { TestimonyService } from '@/domain/testimony/services/TestimonyService'
 import { createTestTestimony } from '@/__tests__/fixtures/testimonies'
 import { createTestUser } from '@/__tests__/fixtures/users'
 import { NotFoundError, AuthorizationError } from '@/lib/errors'
 
-jest.mock('@/lib/supabase/server')
+jest.mock('@/lib/auth/middleware')
 jest.mock('@/domain/testimony/services/TestimonyService')
 
-const mockCreateClient = createClient as jest.MockedFunction<typeof createClient>
-const mockSupabase = {
-  auth: {
-    getUser: jest.fn(),
-  },
-}
+const mockRequireAuth = requireAuth as jest.MockedFunction<typeof requireAuth>
 
 describe('GET /api/testimonies/[id]', () => {
   beforeEach(() => {
     jest.clearAllMocks()
-    mockCreateClient.mockResolvedValue(mockSupabase as any)
   })
 
   it('should return testimony when authenticated and authorized', async () => {
     const user = createTestUser()
     const testimony = createTestTestimony({ id: 'test-123', user_id: user.id })
 
-    mockSupabase.auth.getUser.mockResolvedValue({
-      data: { user },
-      error: null,
-    })
+    mockRequireAuth.mockResolvedValue(user as any)
 
     const mockGetById = jest.fn().mockResolvedValue(testimony)
     ;(TestimonyService as jest.MockedClass<typeof TestimonyService>).prototype.getById = mockGetById
@@ -51,10 +42,8 @@ describe('GET /api/testimonies/[id]', () => {
   })
 
   it('should return 401 when user not authenticated', async () => {
-    mockSupabase.auth.getUser.mockResolvedValue({
-      data: { user: null },
-      error: { message: 'Not authenticated' } as any,
-    })
+    const { AuthenticationError } = await import('@/lib/errors')
+    mockRequireAuth.mockRejectedValue(new AuthenticationError('Authentication required'))
 
     const request = new NextRequest('http://localhost:3000/api/testimonies/test-123')
     const response = await GET(request, { params: { id: 'test-123' } })
@@ -64,10 +53,7 @@ describe('GET /api/testimonies/[id]', () => {
 
   it('should return 403 when user not authorized', async () => {
     const user = createTestUser()
-    mockSupabase.auth.getUser.mockResolvedValue({
-      data: { user },
-      error: null,
-    })
+    mockRequireAuth.mockResolvedValue(user as any)
 
     const mockGetById = jest.fn().mockRejectedValue(new AuthorizationError('Not authorized'))
     ;(TestimonyService as jest.MockedClass<typeof TestimonyService>).prototype.getById = mockGetById
@@ -80,10 +66,7 @@ describe('GET /api/testimonies/[id]', () => {
 
   it('should return 404 when testimony not found', async () => {
     const user = createTestUser()
-    mockSupabase.auth.getUser.mockResolvedValue({
-      data: { user },
-      error: null,
-    })
+    mockRequireAuth.mockResolvedValue(user as any)
 
     const mockGetById = jest.fn().mockRejectedValue(new NotFoundError('Testimony not found'))
     ;(TestimonyService as jest.MockedClass<typeof TestimonyService>).prototype.getById = mockGetById
@@ -98,7 +81,6 @@ describe('GET /api/testimonies/[id]', () => {
 describe('PUT /api/testimonies/[id]', () => {
   beforeEach(() => {
     jest.clearAllMocks()
-    mockCreateClient.mockResolvedValue(mockSupabase as any)
   })
 
   it('should update testimony when authenticated and authorized', async () => {
@@ -110,10 +92,7 @@ describe('PUT /api/testimonies/[id]', () => {
       ...updateData,
     })
 
-    mockSupabase.auth.getUser.mockResolvedValue({
-      data: { user },
-      error: null,
-    })
+    mockRequireAuth.mockResolvedValue(user as any)
 
     const mockUpdate = jest.fn().mockResolvedValue(updatedTestimony)
     ;(TestimonyService as jest.MockedClass<typeof TestimonyService>).prototype.update = mockUpdate
@@ -136,10 +115,8 @@ describe('PUT /api/testimonies/[id]', () => {
   })
 
   it('should return 401 when user not authenticated', async () => {
-    mockSupabase.auth.getUser.mockResolvedValue({
-      data: { user: null },
-      error: { message: 'Not authenticated' } as any,
-    })
+    const { AuthenticationError } = await import('@/lib/errors')
+    mockRequireAuth.mockRejectedValue(new AuthenticationError('Authentication required'))
 
     const request = new NextRequest('http://localhost:3000/api/testimonies/test-123', {
       method: 'PUT',
@@ -153,10 +130,7 @@ describe('PUT /api/testimonies/[id]', () => {
 
   it('should return 403 when user not authorized', async () => {
     const user = createTestUser()
-    mockSupabase.auth.getUser.mockResolvedValue({
-      data: { user },
-      error: null,
-    })
+    mockRequireAuth.mockResolvedValue(user as any)
 
     const mockUpdate = jest.fn().mockRejectedValue(new AuthorizationError('Not authorized'))
     ;(TestimonyService as jest.MockedClass<typeof TestimonyService>).prototype.update = mockUpdate
@@ -173,10 +147,7 @@ describe('PUT /api/testimonies/[id]', () => {
 
   it('should return 404 when testimony not found', async () => {
     const user = createTestUser()
-    mockSupabase.auth.getUser.mockResolvedValue({
-      data: { user },
-      error: null,
-    })
+    mockRequireAuth.mockResolvedValue(user as any)
 
     const mockUpdate = jest.fn().mockRejectedValue(new NotFoundError('Testimony not found'))
     ;(TestimonyService as jest.MockedClass<typeof TestimonyService>).prototype.update = mockUpdate
@@ -195,15 +166,11 @@ describe('PUT /api/testimonies/[id]', () => {
 describe('DELETE /api/testimonies/[id]', () => {
   beforeEach(() => {
     jest.clearAllMocks()
-    mockCreateClient.mockResolvedValue(mockSupabase as any)
   })
 
   it('should delete testimony when authenticated and authorized', async () => {
     const user = createTestUser()
-    mockSupabase.auth.getUser.mockResolvedValue({
-      data: { user },
-      error: null,
-    })
+    mockRequireAuth.mockResolvedValue(user as any)
 
     const mockDelete = jest.fn().mockResolvedValue(undefined)
     ;(TestimonyService as jest.MockedClass<typeof TestimonyService>).prototype.delete = mockDelete
@@ -219,10 +186,8 @@ describe('DELETE /api/testimonies/[id]', () => {
   })
 
   it('should return 401 when user not authenticated', async () => {
-    mockSupabase.auth.getUser.mockResolvedValue({
-      data: { user: null },
-      error: { message: 'Not authenticated' } as any,
-    })
+    const { AuthenticationError } = await import('@/lib/errors')
+    mockRequireAuth.mockRejectedValue(new AuthenticationError('Authentication required'))
 
     const request = new NextRequest('http://localhost:3000/api/testimonies/test-123', {
       method: 'DELETE',
@@ -235,10 +200,7 @@ describe('DELETE /api/testimonies/[id]', () => {
 
   it('should return 403 when user not authorized', async () => {
     const user = createTestUser()
-    mockSupabase.auth.getUser.mockResolvedValue({
-      data: { user },
-      error: null,
-    })
+    mockRequireAuth.mockResolvedValue(user as any)
 
     const mockDelete = jest.fn().mockRejectedValue(new AuthorizationError('Not authorized'))
     ;(TestimonyService as jest.MockedClass<typeof TestimonyService>).prototype.delete = mockDelete
@@ -254,10 +216,7 @@ describe('DELETE /api/testimonies/[id]', () => {
 
   it('should return 404 when testimony not found', async () => {
     const user = createTestUser()
-    mockSupabase.auth.getUser.mockResolvedValue({
-      data: { user },
-      error: null,
-    })
+    mockRequireAuth.mockResolvedValue(user as any)
 
     const mockDelete = jest.fn().mockRejectedValue(new NotFoundError('Testimony not found'))
     ;(TestimonyService as jest.MockedClass<typeof TestimonyService>).prototype.delete = mockDelete

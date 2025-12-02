@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
     // }
 
     // Make testimony public and create gallery entry
-    const supabase = createClient(request)
+    const { supabase } = createClient(request)
     
     // Update testimony to be public
     await supabase

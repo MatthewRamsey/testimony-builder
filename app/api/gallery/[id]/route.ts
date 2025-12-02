@@ -11,7 +11,7 @@ export async function DELETE(
 ) {
   try {
     const user = await requireAuth(request)
-    const supabase = createClient(request)
+    const { supabase } = createClient(request)
 
     // Check if user owns the gallery entry
     const { data: entry, error: fetchError } = await supabase

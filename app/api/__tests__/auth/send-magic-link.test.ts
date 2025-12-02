@@ -3,9 +3,9 @@
  */
 import { POST } from '../../auth/send-magic-link/route'
 import { NextRequest } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { createClient } from '@/lib/supabase/route-handler'
 
-jest.mock('@/lib/supabase/server')
+jest.mock('@/lib/supabase/route-handler')
 
 const mockCreateClient = createClient as jest.MockedFunction<typeof createClient>
 const mockSupabase = {
@@ -17,7 +17,10 @@ const mockSupabase = {
 describe('POST /api/auth/send-magic-link', () => {
   beforeEach(() => {
     jest.clearAllMocks()
-    mockCreateClient.mockResolvedValue(mockSupabase as any)
+    mockCreateClient.mockReturnValue({
+      supabase: mockSupabase as any,
+      getResponse: jest.fn(() => ({ cookies: { getAll: () => [] } })),
+    })
   })
 
   it('should return 200 when valid email provided', async () => {

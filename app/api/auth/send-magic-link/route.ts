@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
     const { email } = requestSchema.parse(body)
 
     // Create route-handler client for use in API route
-    const supabase = createClient(request)
+    const { supabase } = createClient(request)
     const userService = new UserService()
     await userService.sendMagicLink(email, supabase)
 
