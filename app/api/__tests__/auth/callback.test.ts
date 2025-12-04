@@ -50,16 +50,19 @@ describe('GET /auth/callback', () => {
 
   it('should redirect to login with error when code exchange fails', async () => {
     const code = 'invalid-code'
+    const errorMessage = 'Invalid code'
     mockSupabase.auth.exchangeCodeForSession.mockResolvedValue({
       data: { session: null, user: null },
-      error: { message: 'Invalid code' } as any,
+      error: { message: errorMessage } as any,
     })
 
     const request = new NextRequest(`http://localhost:3000/auth/callback?code=${code}`)
     const response = await GET(request)
 
     expect(response.status).toBe(307)
-    expect(response.headers.get('location')).toContain('/login?error=invalid_token')
+    expect(response.headers.get('location')).toBe(
+      `http://localhost:3000/login?error=${encodeURIComponent(errorMessage)}`
+    )
     expect(mockSupabase.auth.exchangeCodeForSession).toHaveBeenCalledWith(code)
   })
 
