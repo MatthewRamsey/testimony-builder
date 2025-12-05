@@ -6,6 +6,8 @@ import { TestimonyEditor } from '@/components/TestimonyEditor'
 import { CreateTestimonyDto } from '@/domain/testimony/types'
 import { createClient } from '@/lib/supabase/client'
 import { AnonymousUserService } from '@/domain/user/services/AnonymousUserService'
+import { useExitIntent } from '@/lib/hooks/useExitIntent'
+import { ExitIntentModal } from '@/components/ExitIntentModal'
 
 export default function CreateTestimonyPage() {
   const router = useRouter()
@@ -13,6 +15,12 @@ export default function CreateTestimonyPage() {
   const [isInitializing, setIsInitializing] = useState(true)
   const [isAnonymous, setIsAnonymous] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [showExitModal, setShowExitModal] = useState(false)
+
+  // Exit intent detection (only for anonymous users)
+  useExitIntent(() => {
+    setShowExitModal(true)
+  }, isAnonymous && !isInitializing)
 
   useEffect(() => {
     initializeUser()
@@ -78,6 +86,16 @@ export default function CreateTestimonyPage() {
     }
   }
 
+  const handleExitModalSignUp = () => {
+    // Save draft to localStorage before redirecting
+    // Note: The testimony editor component will handle saving drafts internally
+    router.push('/login?intent=save_testimony')
+  }
+
+  const handleExitModalClose = () => {
+    setShowExitModal(false)
+  }
+
   if (isInitializing) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -131,6 +149,13 @@ export default function CreateTestimonyPage() {
           />
         </div>
       </div>
+
+      {/* Exit Intent Modal */}
+      <ExitIntentModal
+        isOpen={showExitModal}
+        onClose={handleExitModalClose}
+        onSignUp={handleExitModalSignUp}
+      />
     </div>
   )
 }

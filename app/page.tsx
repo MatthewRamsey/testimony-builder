@@ -15,12 +15,15 @@ export default function Home() {
                 Craft your personal faith testimony with guided storytelling frameworks.
                 Share your journey, inspire others, and preserve your story.
               </p>
+              <p className="text-indigo-100 mb-6 text-sm">
+                ✓ No sign-up required  ✓ Start in 30 seconds  ✓ 100% free to try
+              </p>
               <div className="flex gap-4 justify-center">
                 <Link
-                  href="/login"
-                  className="rounded-md bg-white px-6 py-3 text-base font-semibold text-indigo-600 shadow-sm hover:bg-indigo-50"
+                  href="/create"
+                  className="rounded-md bg-white px-8 py-4 text-lg font-bold text-indigo-600 shadow-lg hover:bg-indigo-50 hover:shadow-xl transition-all"
                 >
-                  Get Started
+                  Start Writing Now
                 </Link>
                 <Link
                   href="/gallery"
@@ -118,10 +121,10 @@ export default function Home() {
                   </li>
                 </ul>
                 <Link
-                  href="/login"
+                  href="/create"
                   className="block w-full text-center rounded-md bg-gray-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-500"
                 >
-                  Get Started
+                  Start Writing Now
                 </Link>
               </div>
 
