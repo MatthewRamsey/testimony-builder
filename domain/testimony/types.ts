@@ -48,6 +48,7 @@ export interface Testimony {
   framework_type: FrameworkType
   content: TestimonyContent
   is_public: boolean
+  share_token?: string
   created_at: Date
   updated_at: Date
 }

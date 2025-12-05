@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { requireAuth } from '@/lib/auth/middleware'
+import { requireAuth, getAuthUser } from '@/lib/auth/middleware'
 import { TestimonyService } from '@/domain/testimony/services/TestimonyService'
 import { SupabaseTestimonyRepository } from '@/infrastructure/database/supabase/repositories/SupabaseTestimonyRepository'
 import { ValidationError, AuthenticationError } from '@/lib/errors'
 import { z } from 'zod'
+import { nanoid } from 'nanoid'
 
 export const dynamic = 'force-dynamic'
 
@@ -45,14 +46,29 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const user = await requireAuth(request)
+    // Use getAuthUser instead of requireAuth to allow anonymous users
+    const user = await getAuthUser(request)
+
+    if (!user) {
+      return NextResponse.json(
+        { error: 'No session found. Please refresh the page.' },
+        { status: 401 }
+      )
+    }
+
     const body = await request.json()
     const data = createTestimonySchema.parse(body)
+
+    // Generate unique share token for public sharing
+    const shareToken = nanoid(10) // e.g., "V1StGXR8_Z"
 
     const repository = new SupabaseTestimonyRepository()
     const service = new TestimonyService(repository)
 
-    const testimony = await service.create(user.id, data as any)
+    const testimony = await service.create(user.id, {
+      ...data,
+      share_token: shareToken,
+    } as any)
 
     return NextResponse.json(testimony, { status: 201 })
   } catch (error) {

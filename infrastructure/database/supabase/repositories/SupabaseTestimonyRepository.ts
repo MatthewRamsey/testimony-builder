@@ -3,9 +3,9 @@ import { Testimony, CreateTestimonyDto, UpdateTestimonyDto } from '@/domain/test
 import { createClient } from '@/lib/supabase/server'
 
 export class SupabaseTestimonyRepository implements ITestimonyRepository {
-  async create(data: CreateTestimonyDto & { user_id: string }): Promise<Testimony> {
+  async create(data: CreateTestimonyDto & { user_id: string; share_token?: string }): Promise<Testimony> {
     const supabase = await createClient()
-    
+
     const { data: testimony, error } = await supabase
       .from('testimonies')
       .insert({
@@ -13,6 +13,7 @@ export class SupabaseTestimonyRepository implements ITestimonyRepository {
         title: data.title,
         framework_type: data.framework_type,
         content: data.content,
+        share_token: data.share_token,
         is_public: false,
       })
       .select()
@@ -46,7 +47,7 @@ export class SupabaseTestimonyRepository implements ITestimonyRepository {
 
   async findByUserId(userId: string): Promise<Testimony[]> {
     const supabase = await createClient()
-    
+
     const { data, error } = await supabase
       .from('testimonies')
       .select()
@@ -58,6 +59,25 @@ export class SupabaseTestimonyRepository implements ITestimonyRepository {
     }
 
     return (data || []).map(this.mapToTestimony)
+  }
+
+  async findByShareToken(token: string): Promise<Testimony | null> {
+    const supabase = await createClient()
+
+    const { data, error } = await supabase
+      .from('testimonies')
+      .select()
+      .eq('share_token', token)
+      .single()
+
+    if (error) {
+      if (error.code === 'PGRST116') {
+        return null
+      }
+      throw new Error(`Failed to find testimony by share token: ${error.message}`)
+    }
+
+    return data ? this.mapToTestimony(data) : null
   }
 
   async update(id: string, data: UpdateTestimonyDto): Promise<Testimony> {
@@ -123,6 +143,7 @@ export class SupabaseTestimonyRepository implements ITestimonyRepository {
       framework_type: data.framework_type,
       content: data.content,
       is_public: data.is_public,
+      share_token: data.share_token,
       created_at: new Date(data.created_at),
       updated_at: new Date(data.updated_at),
     }
