@@ -1,16 +1,19 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { FrameworkType, TestimonyContent, CreateTestimonyDto } from '@/domain/testimony/types'
 import { BeforeEncounterAfter } from './frameworks/BeforeEncounterAfter'
 import { LifeTimeline } from './frameworks/LifeTimeline'
 import { SeasonsOfGrowth } from './frameworks/SeasonsOfGrowth'
 import { FreeFormNarrative } from './frameworks/FreeFormNarrative'
+import { getFrameworkName } from '@/lib/frameworks'
 
 interface TestimonyEditorProps {
   initialTitle?: string
   initialFramework?: FrameworkType
   initialContent?: TestimonyContent
+  initialIsPublic?: boolean
   onSave: (data: CreateTestimonyDto) => void | Promise<void>
   isLoading?: boolean
   isAnonymous?: boolean
@@ -20,15 +23,20 @@ export function TestimonyEditor({
   initialTitle = '',
   initialFramework,
   initialContent,
+  initialIsPublic = false,
   onSave,
   isLoading = false,
   isAnonymous = false,
 }: TestimonyEditorProps) {
+  const router = useRouter()
   const [title, setTitle] = useState(initialTitle)
   const [framework, setFramework] = useState<FrameworkType | ''>(initialFramework || '')
   const [content, setContent] = useState<Partial<TestimonyContent>>(initialContent || {})
+  const [isPublic, setIsPublic] = useState(initialIsPublic)
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [showAiTeaser, setShowAiTeaser] = useState(false)
+
+  const isFrameworkPreSelected = !!initialFramework
 
   const handleFrameworkChange = (newFramework: FrameworkType) => {
     setFramework(newFramework)
@@ -59,6 +67,7 @@ export function TestimonyEditor({
         title: title.trim(),
         framework_type: framework as FrameworkType,
         content: content as TestimonyContent,
+        is_public: isPublic,
       })
     } catch (error) {
       console.error('Error saving testimony:', error)
@@ -113,7 +122,7 @@ export function TestimonyEditor({
           type="text"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+          className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-500 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
           placeholder="Enter a title for your testimony"
         />
         {errors.title && (
@@ -121,32 +130,98 @@ export function TestimonyEditor({
         )}
       </div>
 
-      <div>
-        <label htmlFor="framework" className="block text-sm font-medium text-gray-700 mb-2">
-          Select Framework
-        </label>
-        <select
-          id="framework"
-          value={framework}
-          onChange={(e) => handleFrameworkChange(e.target.value as FrameworkType)}
-          className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
-        >
-          <option value="">Choose a framework...</option>
-          <option value="before_encounter_after">Before → Encounter → After</option>
-          <option value="life_timeline">Life Timeline</option>
-          <option value="seasons_of_growth">Seasons of Growth</option>
-          <option value="free_form">Free-Form Narrative</option>
-        </select>
-        {errors.framework && (
-          <p className="mt-1 text-sm text-red-600">{errors.framework}</p>
-        )}
-      </div>
+      {!isFrameworkPreSelected ? (
+        <div>
+          <label htmlFor="framework" className="block text-sm font-medium text-gray-700 mb-2">
+            Select Framework
+          </label>
+          <select
+            id="framework"
+            value={framework}
+            onChange={(e) => handleFrameworkChange(e.target.value as FrameworkType)}
+            className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+          >
+            <option value="">Choose a framework...</option>
+            <option value="before_encounter_after">Before → Encounter → After</option>
+            <option value="life_timeline">Life Timeline</option>
+            <option value="seasons_of_growth">Seasons of Growth</option>
+            <option value="free_form">Free-Form Narrative</option>
+          </select>
+          {errors.framework && (
+            <p className="mt-1 text-sm text-red-600">{errors.framework}</p>
+          )}
+        </div>
+      ) : (
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <label className="block text-sm font-medium text-gray-700">
+              Framework
+            </label>
+            <button
+              type="button"
+              onClick={() => router.push('/create/choose-framework')}
+              className="text-sm text-indigo-600 hover:text-indigo-800 font-medium"
+            >
+              Change Framework
+            </button>
+          </div>
+          <div className="bg-indigo-50 border border-indigo-200 rounded-md px-3 py-2 text-gray-900 sm:text-sm">
+            {getFrameworkName(framework as FrameworkType)}
+          </div>
+        </div>
+      )}
 
       {framework && (
         <div className="border-t border-gray-200 pt-6">
           {renderFrameworkComponent()}
         </div>
       )}
+
+      {/* Public/Private Toggle */}
+      <div className="border-t border-gray-200 pt-6">
+        <div className="flex items-center justify-between">
+          <div className="flex-1">
+            <label htmlFor="isPublic" className="block text-sm font-medium text-gray-700 mb-1">
+              Visibility
+            </label>
+            <p className="text-xs text-gray-500">
+              {isPublic
+                ? 'This testimony will be visible in the public gallery'
+                : 'This testimony will only be visible to you in your dashboard'}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setIsPublic(!isPublic)}
+            className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${
+              isPublic ? 'bg-indigo-600' : 'bg-gray-200'
+            }`}
+            role="switch"
+            aria-checked={isPublic}
+            aria-label="Toggle public visibility"
+          >
+            <span
+              className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                isPublic ? 'translate-x-5' : 'translate-x-0'
+              }`}
+            />
+          </button>
+        </div>
+        <div className="mt-2 flex items-center gap-2">
+          <span className={`text-sm font-medium ${isPublic ? 'text-indigo-600' : 'text-gray-600'}`}>
+            {isPublic ? 'Public' : 'Private'}
+          </span>
+          {isPublic && (
+            <span className="inline-flex items-center rounded-full bg-indigo-100 px-2.5 py-0.5 text-xs font-medium text-indigo-800">
+              <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" />
+              </svg>
+              Visible in Gallery
+            </span>
+          )}
+        </div>
+      </div>
 
       <div className="flex justify-end gap-3">
         {/* AI Enhancement Button (Teaser for Anonymous) */}
@@ -249,4 +324,5 @@ export function TestimonyEditor({
     </div>
   )
 }
+
 

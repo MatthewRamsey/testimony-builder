@@ -18,16 +18,16 @@ export default function Home() {
               <p className="text-indigo-100 mb-6 text-sm">
                 ✓ No sign-up required  ✓ Start in 30 seconds  ✓ 100% free to try
               </p>
-              <div className="flex gap-4 justify-center">
+              <div className="flex gap-4 justify-center items-center">
                 <Link
-                  href="/create"
-                  className="rounded-md bg-white px-8 py-4 text-lg font-bold text-indigo-600 shadow-lg hover:bg-indigo-50 hover:shadow-xl transition-all"
+                  href="/create/choose-framework"
+                  className="rounded-md bg-white px-8 py-4 text-lg font-bold text-indigo-600 shadow-lg hover:bg-indigo-50 hover:shadow-xl transition-all inline-flex items-center justify-center"
                 >
                   Start Writing Now
                 </Link>
                 <Link
                   href="/gallery"
-                  className="rounded-md bg-indigo-500 px-6 py-3 text-base font-semibold text-white shadow-sm hover:bg-indigo-400"
+                  className="rounded-md bg-indigo-500 px-6 py-[1.125rem] text-base font-semibold text-white shadow-sm hover:bg-indigo-400 inline-flex items-center justify-center"
                 >
                   View Gallery
                 </Link>
@@ -121,7 +121,7 @@ export default function Home() {
                   </li>
                 </ul>
                 <Link
-                  href="/create"
+                  href="/create/choose-framework"
                   className="block w-full text-center rounded-md bg-gray-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-500"
                 >
                   Start Writing Now

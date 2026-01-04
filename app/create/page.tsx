@@ -1,21 +1,25 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect, Suspense } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { TestimonyEditor } from '@/components/TestimonyEditor'
-import { CreateTestimonyDto } from '@/domain/testimony/types'
+import { CreateTestimonyDto, FrameworkType } from '@/domain/testimony/types'
 import { createClient } from '@/lib/supabase/client'
-import { AnonymousUserService } from '@/domain/user/services/AnonymousUserService'
+import { AnonymousUserClientService } from '@/domain/user/services/AnonymousUserClientService'
 import { useExitIntent } from '@/lib/hooks/useExitIntent'
 import { ExitIntentModal } from '@/components/ExitIntentModal'
 
-export default function CreateTestimonyPage() {
+function CreateTestimonyContent() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [isLoading, setIsLoading] = useState(false)
   const [isInitializing, setIsInitializing] = useState(true)
   const [isAnonymous, setIsAnonymous] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [showExitModal, setShowExitModal] = useState(false)
+
+  // Get framework from query params
+  const frameworkParam = searchParams.get('framework') as FrameworkType | null
 
   // Exit intent detection (only for anonymous users)
   useExitIntent(() => {
@@ -23,8 +27,21 @@ export default function CreateTestimonyPage() {
   }, isAnonymous && !isInitializing)
 
   useEffect(() => {
+    // If no framework is provided, redirect to framework selection
+    if (!frameworkParam) {
+      router.push('/create/choose-framework')
+      return
+    }
+
+    // Validate framework type
+    const validFrameworks: FrameworkType[] = ['before_encounter_after', 'life_timeline', 'seasons_of_growth', 'free_form']
+    if (!validFrameworks.includes(frameworkParam)) {
+      router.push('/create/choose-framework')
+      return
+    }
+
     initializeUser()
-  }, [])
+  }, [frameworkParam, router])
 
   const initializeUser = async () => {
     try {
@@ -33,7 +50,7 @@ export default function CreateTestimonyPage() {
 
       if (!session) {
         console.log('[Create] No session found, creating anonymous user...')
-        const anonymousService = new AnonymousUserService()
+        const anonymousService = new AnonymousUserClientService()
         await anonymousService.createAnonymousUser()
         setIsAnonymous(true)
       } else {
@@ -45,7 +62,21 @@ export default function CreateTestimonyPage() {
       }
     } catch (error) {
       console.error('[Create] Error initializing user:', error)
-      setError('Failed to initialize session. Please refresh the page.')
+
+      // Provide more specific error messages
+      let errorMessage = 'Failed to initialize session. Please refresh the page.'
+      
+      if (error instanceof Error) {
+        if (error.message.includes('Unable to connect')) {
+          errorMessage = error.message
+        } else if (error.message.includes('configuration')) {
+          errorMessage = 'Application configuration error. Please contact support.'
+        } else if (error.message.includes('Failed to fetch') || error.message.includes('ERR_NAME_NOT_RESOLVED')) {
+          errorMessage = 'Network error: Unable to connect to the server. Please check your internet connection and try again.'
+        }
+      }
+
+      setError(errorMessage)
     } finally {
       setIsInitializing(false)
     }
@@ -138,7 +169,26 @@ export default function CreateTestimonyPage() {
 
           {error && (
             <div className="mb-6 rounded-md bg-red-50 p-4">
-              <p className="text-sm text-red-800">{error}</p>
+              <div className="flex items-start">
+                <div className="flex-shrink-0">
+                  <svg className="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <div className="ml-3 flex-1">
+                  <p className="text-sm text-red-800">{error}</p>
+                  <button
+                    onClick={() => {
+                      setError(null)
+                      setIsInitializing(true)
+                      initializeUser()
+                    }}
+                    className="mt-3 text-sm font-medium text-red-800 hover:text-red-900 underline"
+                  >
+                    Try Again
+                  </button>
+                </div>
+              </div>
             </div>
           )}
 
@@ -146,6 +196,7 @@ export default function CreateTestimonyPage() {
             onSave={handleSave}
             isLoading={isLoading}
             isAnonymous={isAnonymous}
+            initialFramework={frameworkParam || undefined}
           />
         </div>
       </div>
@@ -157,5 +208,20 @@ export default function CreateTestimonyPage() {
         onSignUp={handleExitModalSignUp}
       />
     </div>
+  )
+}
+
+export default function CreateTestimonyPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    }>
+      <CreateTestimonyContent />
+    </Suspense>
   )
 }
