@@ -116,25 +116,17 @@ export function Navigation() {
                 Sign Up to Save
               </Link>
             ) : user ? (
-              // Authenticated user: Show Pricing and Sign Out
-              <div className="flex items-center space-x-4">
-                <Link
-                  href="/pricing"
-                  className="text-sm text-gray-700 hover:text-gray-900"
-                >
-                  Pricing
-                </Link>
-                <button
-                  onClick={async () => {
-                    const supabase = createClient()
-                    await supabase.auth.signOut()
-                    window.location.href = '/'
-                  }}
-                  className="text-sm text-gray-700 hover:text-gray-900"
-                >
-                  Sign Out
-                </button>
-              </div>
+              // Authenticated user: Show Sign Out
+              <button
+                onClick={async () => {
+                  const supabase = createClient()
+                  await supabase.auth.signOut()
+                  window.location.href = '/'
+                }}
+                className="text-sm text-gray-700 hover:text-gray-900"
+              >
+                Sign Out
+              </button>
             ) : (
               // No user: Show Sign In
               <Link
