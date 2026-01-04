@@ -17,6 +17,7 @@ const createTestimonySchema = z.object({
     'free_form',
   ]),
   content: z.record(z.any()),
+  is_public: z.boolean().optional().default(false),
 })
 
 export async function GET(request: NextRequest) {
@@ -100,4 +101,5 @@ export async function POST(request: NextRequest) {
     )
   }
 }
+
 

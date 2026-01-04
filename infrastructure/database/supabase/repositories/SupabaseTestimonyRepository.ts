@@ -14,7 +14,7 @@ export class SupabaseTestimonyRepository implements ITestimonyRepository {
         framework_type: data.framework_type,
         content: data.content,
         share_token: data.share_token,
-        is_public: false,
+        is_public: data.is_public ?? false,
       })
       .select()
       .single()
@@ -149,4 +149,5 @@ export class SupabaseTestimonyRepository implements ITestimonyRepository {
     }
   }
 }
+
 

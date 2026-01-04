@@ -57,6 +57,7 @@ export interface CreateTestimonyDto {
   title: string
   framework_type: FrameworkType
   content: TestimonyContent
+  is_public?: boolean
 }
 
 export interface UpdateTestimonyDto {
@@ -64,4 +65,5 @@ export interface UpdateTestimonyDto {
   content?: TestimonyContent
   is_public?: boolean
 }
+
 

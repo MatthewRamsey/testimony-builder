@@ -104,6 +104,10 @@ export class TestimonyService {
     return this.repository.findByUserId(userId)
   }
 
+  async findPublicEntries(page: number = 1, limit: number = 20): Promise<Testimony[]> {
+    return this.repository.findPublicEntries(page, limit)
+  }
+
   private validateContentStructure(framework: FrameworkType, content: any): void {
     switch (framework) {
       case 'before_encounter_after':

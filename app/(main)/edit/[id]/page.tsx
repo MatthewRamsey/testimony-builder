@@ -52,6 +52,7 @@ export default function EditTestimonyPage() {
       const updateData: UpdateTestimonyDto = {
         title: data.title,
         content: data.content,
+        is_public: data.is_public,
       }
 
       const response = await fetch(`/api/testimonies/${id}`, {
@@ -107,6 +108,7 @@ export default function EditTestimonyPage() {
             initialTitle={testimony.title}
             initialFramework={testimony.framework_type}
             initialContent={testimony.content}
+            initialIsPublic={testimony.is_public}
             onSave={handleSave}
             isLoading={isSaving}
           />
@@ -115,4 +117,5 @@ export default function EditTestimonyPage() {
     </div>
   )
 }
+
 
