@@ -9,3 +9,4 @@ export interface IAiProvider {
   generateSuggestions(testimony: Testimony, prompt: string): Promise<AiSuggestion[]>
 }
 
+

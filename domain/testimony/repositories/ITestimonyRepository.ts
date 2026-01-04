@@ -9,3 +9,4 @@ export interface ITestimonyRepository {
   findPublicEntries(page?: number, limit?: number): Promise<Testimony[]>
 }
 
+

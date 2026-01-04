@@ -16,3 +16,4 @@ export interface IPaymentProvider {
   constructEvent(payload: string | Buffer, signature: string): any
 }
 
+

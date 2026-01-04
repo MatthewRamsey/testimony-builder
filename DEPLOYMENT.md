@@ -150,3 +150,4 @@ OPENAI_API_KEY=your_openai_api_key
 3. Update Supabase redirect URLs to include your custom domain
 4. Update `NEXT_PUBLIC_APP_URL` in Vercel environment variables
 
+

@@ -69,3 +69,4 @@ CREATE POLICY "Users can delete their own gallery entries"
   ON gallery_entries FOR DELETE
   USING (auth.uid() = user_id);
 
+
