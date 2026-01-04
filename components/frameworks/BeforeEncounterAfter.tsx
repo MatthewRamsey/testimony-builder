@@ -28,7 +28,7 @@ export function BeforeEncounterAfter({ value, onChange }: BeforeEncounterAfterPr
           rows={6}
           value={value.before || ''}
           onChange={(e) => handleChange('before', e.target.value)}
-          className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+          className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-500 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
           placeholder="Describe your life before your encounter with faith..."
         />
       </div>
@@ -42,7 +42,7 @@ export function BeforeEncounterAfter({ value, onChange }: BeforeEncounterAfterPr
           rows={6}
           value={value.encounter || ''}
           onChange={(e) => handleChange('encounter', e.target.value)}
-          className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+          className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-500 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
           placeholder="Describe your encounter with faith, God, or your spiritual awakening..."
         />
       </div>
@@ -56,11 +56,12 @@ export function BeforeEncounterAfter({ value, onChange }: BeforeEncounterAfterPr
           rows={6}
           value={value.after || ''}
           onChange={(e) => handleChange('after', e.target.value)}
-          className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+          className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-500 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
           placeholder="Describe how your life has changed after your encounter..."
         />
       </div>
     </div>
   )
 }
+
 

@@ -1,6 +1,7 @@
 'use client'
 
 import { Testimony } from '@/domain/testimony/types'
+import { getFrameworkName } from '@/lib/frameworks'
 
 interface TestimonyPreviewProps {
   testimony: Testimony
@@ -96,10 +97,11 @@ export function TestimonyPreview({ testimony }: TestimonyPreviewProps) {
   return (
     <div className="prose max-w-none">
       <div className="mb-6 text-sm text-gray-500">
-        Framework: {testimony.framework_type.replace(/_/g, ' ')}
+        Framework: {getFrameworkName(testimony.framework_type)}
       </div>
       {renderContent()}
     </div>
   )
 }
+
 

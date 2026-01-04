@@ -72,7 +72,7 @@ export function LifeTimeline({ value, onChange }: LifeTimelineProps) {
               type="text"
               value={milestone.age}
               onChange={(e) => handleMilestoneChange(index, 'age', e.target.value)}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+              className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-500 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
               placeholder="e.g., Age 20, 2015, etc."
             />
           </div>
@@ -85,7 +85,7 @@ export function LifeTimeline({ value, onChange }: LifeTimelineProps) {
               rows={3}
               value={milestone.event}
               onChange={(e) => handleMilestoneChange(index, 'event', e.target.value)}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+              className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-500 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
               placeholder="Describe the event or experience..."
             />
           </div>
@@ -98,7 +98,7 @@ export function LifeTimeline({ value, onChange }: LifeTimelineProps) {
               rows={3}
               value={milestone.impact}
               onChange={(e) => handleMilestoneChange(index, 'impact', e.target.value)}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+              className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-500 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
               placeholder="How did this impact your faith journey?"
             />
           </div>
@@ -107,4 +107,5 @@ export function LifeTimeline({ value, onChange }: LifeTimelineProps) {
     </div>
   )
 }
+
 

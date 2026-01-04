@@ -72,7 +72,7 @@ export function SeasonsOfGrowth({ value, onChange }: SeasonsOfGrowthProps) {
               type="text"
               value={season.season}
               onChange={(e) => handleSeasonChange(index, 'season', e.target.value)}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+              className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-500 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
               placeholder="e.g., College Years, Early Career, etc."
             />
           </div>
@@ -85,7 +85,7 @@ export function SeasonsOfGrowth({ value, onChange }: SeasonsOfGrowthProps) {
               rows={3}
               value={season.challenges}
               onChange={(e) => handleSeasonChange(index, 'challenges', e.target.value)}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+              className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-500 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
               placeholder="What challenges did you face during this season?"
             />
           </div>
@@ -98,7 +98,7 @@ export function SeasonsOfGrowth({ value, onChange }: SeasonsOfGrowthProps) {
               rows={3}
               value={season.growth}
               onChange={(e) => handleSeasonChange(index, 'growth', e.target.value)}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+              className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-500 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
               placeholder="How did you grow during this season?"
             />
           </div>
@@ -111,7 +111,7 @@ export function SeasonsOfGrowth({ value, onChange }: SeasonsOfGrowthProps) {
               rows={3}
               value={season.lessons}
               onChange={(e) => handleSeasonChange(index, 'lessons', e.target.value)}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+              className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-500 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
               placeholder="What lessons did you learn?"
             />
           </div>
@@ -120,4 +120,5 @@ export function SeasonsOfGrowth({ value, onChange }: SeasonsOfGrowthProps) {
     </div>
   )
 }
+
 
