@@ -39,7 +39,7 @@ export function ExitIntentModal({ isOpen, onClose, onSignUp }: ExitIntentModalPr
 
           {/* Content */}
           <h2 className="text-2xl font-bold text-gray-900 text-center mb-2">
-            Don't Lose Your Work!
+            Don&apos;t Lose Your Work!
           </h2>
           <p className="text-gray-600 text-center mb-6">
             Your testimony is currently only saved in your browser. Sign up now to save it permanently to the cloud.

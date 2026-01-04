@@ -84,7 +84,7 @@ export default function ChooseFrameworkPage() {
               </div>
               <div className="ml-3 flex-1">
                 <h3 className="text-sm font-medium text-indigo-900">
-                  You're creating anonymously
+                  You&apos;re creating anonymously
                 </h3>
                 <p className="mt-1 text-sm text-indigo-700">
                   Your testimony will be saved temporarily. Sign up after completion to claim it permanently and unlock AI editing features.
