@@ -1,51 +1,35 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/route-handler'
-import { Testimony } from '@/domain/testimony/types'
+import { TestimonyService } from '@/domain/testimony/services/TestimonyService'
+import { SupabaseTestimonyRepository } from '@/infrastructure/database/supabase/repositories/SupabaseTestimonyRepository'
 
 export const dynamic = 'force-dynamic'
 
 export async function GET(request: NextRequest) {
   try {
-    const { supabase } = createClient(request)
     const { searchParams } = new URL(request.url)
     const page = parseInt(searchParams.get('page') || '1')
     const limit = parseInt(searchParams.get('limit') || '20')
-    const from = (page - 1) * limit
-    const to = from + limit - 1
 
-    // Get public gallery entries with testimonies
-    const { data: entries, error } = await supabase
-      .from('gallery_entries')
-      .select(`
-        id,
-        display_name,
-        created_at,
-        testimonies (
-          id,
-          title,
-          framework_type,
-          content,
-          created_at
-        )
-      `)
-      .order('created_at', { ascending: false })
-      .range(from, to)
+    // Get public testimonies directly using the repository
+    const repository = new SupabaseTestimonyRepository()
+    const service = new TestimonyService(repository)
+    const testimonies = await service.findPublicEntries(page, limit)
 
-    if (error) {
-      throw new Error(`Failed to fetch gallery entries: ${error.message}`)
-    }
-
-    const formatted = (entries || []).map((entry: any) => ({
-      id: entry.id,
-      displayName: entry.display_name,
-      testimony: entry.testimonies ? {
-        id: entry.testimonies.id,
-        title: entry.testimonies.title,
-        framework_type: entry.testimonies.framework_type,
-        content: entry.testimonies.content,
-        created_at: entry.testimonies.created_at,
-      } : null,
-      created_at: entry.created_at,
+    // Format response to match existing gallery structure
+    // Display names can be added later if a profiles table is created
+    const formatted = testimonies.map((testimony) => ({
+      id: testimony.id,
+      displayName: null, // Can be enhanced later with user profiles
+      testimony: {
+        id: testimony.id,
+        title: testimony.title,
+        framework_type: testimony.framework_type,
+        content: testimony.content,
+        is_public: testimony.is_public,
+        created_at: testimony.created_at,
+      },
+      created_at: testimony.created_at,
     }))
 
     return NextResponse.json(formatted, { status: 200 })
