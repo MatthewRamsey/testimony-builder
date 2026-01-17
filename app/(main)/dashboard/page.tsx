@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Testimony } from '@/domain/testimony/types'
 import { getFrameworkName } from '@/lib/frameworks'
+import { PenNibIcon } from '@/components/icons/PenNibIcon'
 
 export default function DashboardPage() {
   const router = useRouter()
@@ -72,8 +73,9 @@ export default function DashboardPage() {
           <h1 className="text-3xl font-bold text-gray-900">My Testimonies</h1>
           <Link
             href="/create/choose-framework"
-            className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500"
+            className="inline-flex items-center gap-2 rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500"
           >
+            <PenNibIcon className="w-4 h-4" />
             Create New Testimony
           </Link>
         </div>
@@ -89,8 +91,9 @@ export default function DashboardPage() {
             <p className="text-gray-600 mb-4">You haven&apos;t created any testimonies yet.</p>
             <Link
               href="/create/choose-framework"
-              className="inline-block rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500"
+              className="inline-flex items-center gap-2 rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500"
             >
+              <PenNibIcon className="w-4 h-4" />
               Create Your First Testimony
             </Link>
           </div>

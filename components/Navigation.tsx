@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { PenNibIcon } from '@/components/icons/PenNibIcon'
 
 export function Navigation() {
   const pathname = usePathname()
@@ -58,8 +59,11 @@ export function Navigation() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex">
-            <Link href="/" className="flex items-center px-2 py-2 text-xl font-bold text-indigo-600">
-              Testimony Pro
+            <Link href="/" className="group flex items-center gap-2 px-2 py-2">
+              <PenNibIcon className="w-7 h-7 text-indigo-600 group-hover:text-indigo-700 transition-colors" />
+              <span className="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                Testimony Pro
+              </span>
             </Link>
             <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
               <Link
