@@ -7,6 +7,8 @@
 
 # testing
 /coverage
+/playwright-report
+/test-results
 
 # next.js
 /.next/
@@ -27,6 +29,7 @@ yarn-error.log*
 # local env files
 .env*.local
 .env
+.env.test
 
 # vercel
 .vercel
@@ -43,4 +46,3 @@ TDD_PLAN.md
 
 # setup scripts (one-time use)
 setup-github.sh
-
