@@ -5,6 +5,8 @@ import { useRouter, useParams } from 'next/navigation'
 import Link from 'next/link'
 import { Testimony } from '@/domain/testimony/types'
 import { TestimonyPreview } from '@/components/TestimonyPreview'
+import { ShareButtons } from '@/components/ShareButtons'
+import { generateExcerptWithFallback } from '@/lib/excerpt'
 
 export default function PreviewTestimonyPage() {
   const router = useRouter()
@@ -119,6 +121,20 @@ export default function PreviewTestimonyPage() {
           </div>
 
           <TestimonyPreview testimony={testimony} />
+
+          {/* Share Buttons Section - only show if testimony has a share token */}
+          {testimony.share_token && (
+            <div className="mt-8 pt-6 border-t border-gray-200">
+              <h3 className="text-sm font-medium text-gray-700 mb-3">Share your testimony</h3>
+              <ShareButtons
+                shareUrl={`${typeof window !== 'undefined' ? window.location.origin : ''}/share/${testimony.share_token}`}
+                title={testimony.title}
+                excerpt={generateExcerptWithFallback(testimony)}
+                showLabels={false}
+                size="sm"
+              />
+            </div>
+          )}
         </div>
       </div>
     </div>
