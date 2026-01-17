@@ -13,13 +13,6 @@ export function createTestUser(overrides?: Partial<TestUser>): TestUser {
   }
 }
 
-export function createPremiumUser(): TestUser {
-  return createTestUser({
-    id: 'premium-user-123',
-    email: 'premium@example.com'
-  })
-}
-
 export function createOtherUser(): TestUser {
   return createTestUser({
     id: 'user-456',
@@ -29,6 +22,5 @@ export function createOtherUser(): TestUser {
 
 export const mockUsers = {
   default: createTestUser(),
-  premium: createPremiumUser(),
   other: createOtherUser()
 }

@@ -1,17 +1,20 @@
 /**
  * @jest-environment node
  */
-import { GET, POST } from '../../testimonies/route'
 import { NextRequest } from 'next/server'
-import { requireAuth } from '@/lib/auth/middleware'
+import { getAuthUser, requireAuth } from '@/lib/auth/middleware'
 import { TestimonyService } from '@/domain/testimony/services/TestimonyService'
 import { createTestTestimony } from '@/__tests__/fixtures/testimonies'
 import { createTestUser } from '@/__tests__/fixtures/users'
 
 jest.mock('@/lib/auth/middleware')
 jest.mock('@/domain/testimony/services/TestimonyService')
+jest.mock('nanoid', () => ({ nanoid: () => 'test-share-token' }))
 
 const mockRequireAuth = requireAuth as jest.MockedFunction<typeof requireAuth>
+const mockGetAuthUser = getAuthUser as jest.MockedFunction<typeof getAuthUser>
+
+import { GET, POST } from '../../testimonies/route'
 
 describe('GET /api/testimonies', () => {
   beforeEach(() => {
@@ -57,6 +60,7 @@ describe('GET /api/testimonies', () => {
   it('should return 500 when service throws error', async () => {
     const user = createTestUser()
     mockRequireAuth.mockResolvedValue(user as any)
+    const consoleSpy = jest.spyOn(console, 'error').mockImplementation()
 
     const mockListByUser = jest.fn().mockRejectedValue(new Error('Database error'))
     ;(TestimonyService as jest.MockedClass<typeof TestimonyService>).prototype.listByUser = mockListByUser
@@ -65,6 +69,7 @@ describe('GET /api/testimonies', () => {
     const response = await GET(request)
 
     expect(response.status).toBe(500)
+    consoleSpy.mockRestore()
   })
 })
 
@@ -86,10 +91,11 @@ describe('POST /api/testimonies', () => {
     }
     const createdTestimony = createTestTestimony({
       ...testimonyData,
+      share_token: 'test-share-token',
       user_id: user.id,
     })
 
-    mockRequireAuth.mockResolvedValue(user as any)
+    mockGetAuthUser.mockResolvedValue(user as any)
 
     const mockCreate = jest.fn().mockResolvedValue(createdTestimony)
     ;(TestimonyService as jest.MockedClass<typeof TestimonyService>).prototype.create = mockCreate
@@ -108,12 +114,15 @@ describe('POST /api/testimonies', () => {
       framework_type: 'before_encounter_after',
       user_id: user.id,
     })
-    expect(mockCreate).toHaveBeenCalledWith(user.id, testimonyData)
+    expect(mockCreate).toHaveBeenCalledWith(user.id, {
+      ...testimonyData,
+      is_public: false,
+      share_token: 'test-share-token',
+    })
   })
 
   it('should return 401 when user not authenticated', async () => {
-    const { AuthenticationError } = await import('@/lib/errors')
-    mockRequireAuth.mockRejectedValue(new AuthenticationError('Authentication required'))
+    mockGetAuthUser.mockResolvedValue(null)
 
     const request = new NextRequest('http://localhost:3000/api/testimonies', {
       method: 'POST',
@@ -131,7 +140,7 @@ describe('POST /api/testimonies', () => {
 
   it('should return 400 when title is missing', async () => {
     const user = createTestUser()
-    mockRequireAuth.mockResolvedValue(user as any)
+    mockGetAuthUser.mockResolvedValue(user as any)
 
     const request = new NextRequest('http://localhost:3000/api/testimonies', {
       method: 'POST',
@@ -148,7 +157,7 @@ describe('POST /api/testimonies', () => {
 
   it('should return 400 when framework_type is invalid', async () => {
     const user = createTestUser()
-    mockRequireAuth.mockResolvedValue(user as any)
+    mockGetAuthUser.mockResolvedValue(user as any)
 
     const request = new NextRequest('http://localhost:3000/api/testimonies', {
       method: 'POST',
