@@ -1,13 +1,14 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { PenNibIcon } from '@/components/icons/PenNibIcon'
 
 export function Navigation() {
   const pathname = usePathname()
+  const searchParams = useSearchParams()
   const [user, setUser] = useState<any>(null)
   const [isAnonymous, setIsAnonymous] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
@@ -53,6 +54,9 @@ export function Navigation() {
   }
 
   const isActive = (path: string) => pathname === path
+  const isCreateRoute = pathname.startsWith('/create')
+  const isSaveIntentRoute = pathname === '/login' && searchParams.get('intent') === 'save_testimony'
+  const isShareRoute = pathname.startsWith('/share/')
 
   return (
     <nav className="bg-white shadow-sm">
@@ -115,12 +119,14 @@ export function Navigation() {
               </div>
             ) : user && isAnonymous ? (
               // Anonymous user: Show prominent "Sign Up to Save" button
-              <Link
-                href="/login?intent=save_testimony"
-                className="px-4 py-2 text-sm font-bold text-white bg-gradient-to-r from-indigo-600 to-purple-600 rounded-lg hover:from-indigo-700 hover:to-purple-700 shadow-md hover:shadow-lg transition-all"
-              >
-                Sign Up to Save
-              </Link>
+              isCreateRoute || isSaveIntentRoute || isShareRoute ? null : (
+                <Link
+                  href="/login?intent=save_testimony"
+                  className="px-4 py-2 text-sm font-bold text-white bg-gradient-to-r from-indigo-600 to-purple-600 rounded-lg hover:from-indigo-700 hover:to-purple-700 shadow-md hover:shadow-lg transition-all"
+                >
+                  Sign Up to Save
+                </Link>
+              )
             ) : user ? (
               // Authenticated user: Show Sign Out
               <button
