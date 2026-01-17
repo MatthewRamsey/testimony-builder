@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
     const data = createTestimonySchema.parse(body)
 
     // Generate unique share token for public sharing
-    const shareToken = nanoid(10) // e.g., "V1StGXR8_Z"
+    const shareToken = nanoid()
 
     const repository = new SupabaseTestimonyRepository()
     const service = new TestimonyService(repository)
@@ -101,5 +101,4 @@ export async function POST(request: NextRequest) {
     )
   }
 }
-
 

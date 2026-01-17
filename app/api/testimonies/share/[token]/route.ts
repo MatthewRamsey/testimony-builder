@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getAuthUser } from '@/lib/auth/middleware'
-import { AnonymousUserService } from '@/domain/user/services/AnonymousUserService'
-import { createAdminClient } from '@/lib/supabase/admin'
+import { createClient } from '@/lib/supabase/route-handler'
+import { checkRateLimit, getClientIp } from '@/lib/rate-limit'
 
 export const dynamic = 'force-dynamic'
 
@@ -16,12 +15,22 @@ export async function GET(
   { params }: { params: { token: string } }
 ) {
   try {
-    const supabase = createAdminClient()
-    const { data, error } = await supabase
-      .from('testimonies')
-      .select()
-      .eq('share_token', params.token)
-      .single()
+    const ip = getClientIp(request.headers)
+    const rateLimitKey = `share:${ip}`
+    const rateLimit = checkRateLimit(rateLimitKey, 60, 60_000)
+
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { error: 'Too many requests. Please try again shortly.' },
+        { status: 429 }
+      )
+    }
+
+    const { supabase } = createClient(request)
+    const { data, error } = await supabase.rpc(
+      'get_public_testimony_by_share_token',
+      { share_token: params.token }
+    )
 
     if (error) {
       if (error.code === 'PGRST116') {
@@ -33,32 +42,27 @@ export async function GET(
       throw new Error(error.message)
     }
 
-    const testimony = {
-      ...data,
-      created_at: new Date(data.created_at),
-      updated_at: new Date(data.updated_at),
-    }
-
-    if (!testimony) {
+    const row = Array.isArray(data) ? data[0] : data
+    if (!row) {
       return NextResponse.json(
         { error: 'Testimony not found' },
         { status: 404 }
       )
     }
 
-    // Check if current user owns this testimony
-    const user = await getAuthUser(request)
-    const isOwner = user?.id === testimony.user_id
-
-    // Check if testimony owner is anonymous
-    const anonymousService = new AnonymousUserService()
-    const isAnonymous = await anonymousService.isAnonymousUser(testimony.user_id)
-
     return NextResponse.json(
       {
-        testimony,
-        isOwner,
-        isAnonymous,
+        testimony: {
+          id: row.id,
+          title: row.title,
+          framework_type: row.framework_type,
+          content: row.content,
+          is_public: row.is_public,
+          created_at: row.created_at,
+          updated_at: row.updated_at,
+        },
+        isOwner: row.is_owner,
+        isAnonymous: row.is_anonymous,
       },
       { status: 200 }
     )

@@ -53,6 +53,8 @@ export interface Testimony {
   updated_at: Date
 }
 
+export type PublicTestimony = Omit<Testimony, 'user_id' | 'share_token'>
+
 export interface CreateTestimonyDto {
   title: string
   framework_type: FrameworkType
@@ -65,5 +67,4 @@ export interface UpdateTestimonyDto {
   content?: TestimonyContent
   is_public?: boolean
 }
-
 

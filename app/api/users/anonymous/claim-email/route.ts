@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { checkRateLimit, getClientIp } from '@/lib/rate-limit'
 
 export const dynamic = 'force-dynamic'
 
@@ -16,6 +17,17 @@ const requestSchema = z.object({
  */
 export async function POST(request: NextRequest) {
   try {
+    const ip = getClientIp(request.headers)
+    const rateLimitKey = `claim-email:${ip}`
+    const rateLimit = checkRateLimit(rateLimitKey, 5, 60_000)
+
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { error: 'Too many requests. Please try again shortly.' },
+        { status: 429 }
+      )
+    }
+
     const body = await request.json()
     const { shareToken, email } = requestSchema.parse(body)
     const normalizedEmail = email.trim().toLowerCase()

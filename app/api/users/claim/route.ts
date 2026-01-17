@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { requireAuth } from '@/lib/auth/middleware'
-import { SupabaseTestimonyRepository } from '@/infrastructure/database/supabase/repositories/SupabaseTestimonyRepository'
 import { AnonymousUserService } from '@/domain/user/services/AnonymousUserService'
+import { createAdminClient } from '@/lib/supabase/admin'
 
 export const dynamic = 'force-dynamic'
 
@@ -31,8 +31,22 @@ export async function POST(request: NextRequest) {
     console.log('[Claim API] Share token:', shareToken)
 
     // Find the testimony by share token
-    const repository = new SupabaseTestimonyRepository()
-    const testimony = await repository.findByShareToken(shareToken)
+    const adminClient = createAdminClient()
+    const { data: testimony, error: testimonyError } = await adminClient
+      .from('testimonies')
+      .select('id, user_id, share_token')
+      .eq('share_token', shareToken)
+      .single()
+
+    if (testimonyError) {
+      if (testimonyError.code === 'PGRST116') {
+        return NextResponse.json(
+          { error: 'Testimony not found' },
+          { status: 404 }
+        )
+      }
+      throw new Error(testimonyError.message)
+    }
 
     if (!testimony) {
       return NextResponse.json(
@@ -76,7 +90,11 @@ export async function POST(request: NextRequest) {
     )
 
     // Fetch the updated testimony
-    const updatedTestimony = await repository.findByShareToken(shareToken)
+    const { data: updatedTestimony } = await adminClient
+      .from('testimonies')
+      .select()
+      .eq('share_token', shareToken)
+      .single()
 
     return NextResponse.json(
       {

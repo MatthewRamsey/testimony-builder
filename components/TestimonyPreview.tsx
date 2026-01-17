@@ -1,10 +1,10 @@
 'use client'
 
-import { Testimony } from '@/domain/testimony/types'
+import { Testimony, PublicTestimony } from '@/domain/testimony/types'
 import { getFrameworkName } from '@/lib/frameworks'
 
 interface TestimonyPreviewProps {
-  testimony: Testimony
+  testimony: Testimony | PublicTestimony
 }
 
 export function TestimonyPreview({ testimony }: TestimonyPreviewProps) {
@@ -103,5 +103,4 @@ export function TestimonyPreview({ testimony }: TestimonyPreviewProps) {
     </div>
   )
 }
-
 

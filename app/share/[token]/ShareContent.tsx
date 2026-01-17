@@ -2,13 +2,13 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { Testimony } from '@/domain/testimony/types'
+import { PublicTestimony } from '@/domain/testimony/types'
 import { TestimonyPreview } from '@/components/TestimonyPreview'
 import { ShareButtons } from '@/components/ShareButtons'
 import { generateExcerptWithFallback } from '@/lib/excerpt'
 
 interface SharePageData {
-  testimony: Testimony
+  testimony: PublicTestimony
   isOwner: boolean
   isAnonymous: boolean
 }

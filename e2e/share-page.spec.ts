@@ -273,9 +273,7 @@ test.describe('Share Page - Anonymous Email Capture', () => {
     await page.waitForLoadState('networkidle')
 
     await expect(
-      page.getByText(
-        /Free account\. Takes 30 seconds\. No credit card required\./i
-      )
+      page.getByRole('heading', { name: /claim your testimony/i })
     ).toBeVisible()
 
     const claimLink = page.getByRole('link', { name: /sign up & claim/i })
@@ -287,7 +285,7 @@ test.describe('Share Page - Anonymous Email Capture', () => {
 
     await Promise.all([
       page.waitForResponse('**/api/users/anonymous/claim-email'),
-      page.getByRole('button', { name: /save email/i }).click(),
+      page.getByRole('button', { name: /save testimony|saving/i }).click(),
     ])
 
     await expect(

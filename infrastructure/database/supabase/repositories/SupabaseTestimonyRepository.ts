@@ -1,5 +1,5 @@
 import { ITestimonyRepository } from '@/domain/testimony/repositories/ITestimonyRepository'
-import { Testimony, CreateTestimonyDto, UpdateTestimonyDto } from '@/domain/testimony/types'
+import { Testimony, PublicTestimony, CreateTestimonyDto, UpdateTestimonyDto } from '@/domain/testimony/types'
 import { createClient } from '@/lib/supabase/server'
 
 export class SupabaseTestimonyRepository implements ITestimonyRepository {
@@ -80,6 +80,34 @@ export class SupabaseTestimonyRepository implements ITestimonyRepository {
     return data ? this.mapToTestimony(data) : null
   }
 
+  async findPublicByShareToken(token: string): Promise<PublicTestimony | null> {
+    const supabase = await createClient()
+
+    const { data, error } = await supabase.rpc(
+      'get_public_testimony_by_share_token',
+      { share_token: token }
+    )
+
+    if (error) {
+      throw new Error(`Failed to find public testimony by share token: ${error.message}`)
+    }
+
+    const row = Array.isArray(data) ? data[0] : data
+    if (!row) {
+      return null
+    }
+
+    return {
+      id: row.id,
+      title: row.title,
+      framework_type: row.framework_type,
+      content: row.content,
+      is_public: row.is_public,
+      created_at: new Date(row.created_at),
+      updated_at: new Date(row.updated_at),
+    }
+  }
+
   async update(id: string, data: UpdateTestimonyDto): Promise<Testimony> {
     const supabase = await createClient()
     
@@ -149,5 +177,4 @@ export class SupabaseTestimonyRepository implements ITestimonyRepository {
     }
   }
 }
-
 

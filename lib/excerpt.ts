@@ -1,5 +1,6 @@
 import {
   Testimony,
+  PublicTestimony,
   FrameworkType,
   BeforeEncounterAfterContent,
   LifeTimelineContent,
@@ -77,7 +78,10 @@ function extractFreeFormExcerpt(content: FreeFormContent): string {
  * Generates an excerpt from testimony content based on framework type.
  * Returns a truncated excerpt suitable for social sharing (~160 chars for Twitter).
  */
-export function generateExcerpt(testimony: Testimony, maxLength: number = MAX_EXCERPT_LENGTH): string {
+export function generateExcerpt(
+  testimony: Testimony | PublicTestimony,
+  maxLength: number = MAX_EXCERPT_LENGTH
+): string {
   let rawExcerpt = ''
 
   switch (testimony.framework_type) {
@@ -103,7 +107,10 @@ export function generateExcerpt(testimony: Testimony, maxLength: number = MAX_EX
 /**
  * Generates a default excerpt if content-based excerpt is empty.
  */
-export function generateExcerptWithFallback(testimony: Testimony, maxLength: number = MAX_EXCERPT_LENGTH): string {
+export function generateExcerptWithFallback(
+  testimony: Testimony | PublicTestimony,
+  maxLength: number = MAX_EXCERPT_LENGTH
+): string {
   const excerpt = generateExcerpt(testimony, maxLength)
 
   if (excerpt) return excerpt

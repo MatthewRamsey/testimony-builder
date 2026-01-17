@@ -16,7 +16,7 @@ export async function generateMetadata({ params }: SharePageProps): Promise<Meta
 
   try {
     const repository = new SupabaseTestimonyRepository()
-    const testimony = await repository.findByShareToken(token)
+    const testimony = await repository.findPublicByShareToken(token)
 
     if (!testimony) {
       return {
