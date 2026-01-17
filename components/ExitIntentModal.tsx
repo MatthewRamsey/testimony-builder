@@ -84,12 +84,6 @@ export function ExitIntentModal({ isOpen, onClose, onSignUp }: ExitIntentModalPr
             >
               Sign Up & Save Forever
             </button>
-            <button
-              onClick={onClose}
-              className="w-full text-gray-600 px-6 py-2 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
-            >
-              Continue Without Account
-            </button>
           </div>
 
           <p className="text-xs text-gray-500 text-center mt-4">
