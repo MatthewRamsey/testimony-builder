@@ -7,7 +7,11 @@ export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url)
   const code = requestUrl.searchParams.get('code')
   const claimToken = requestUrl.searchParams.get('claim')
-  const next = requestUrl.searchParams.get('next') || '/dashboard'
+  // Validate next parameter to prevent open redirect attacks
+  let next = requestUrl.searchParams.get('next') || '/dashboard'
+  if (!next.startsWith('/') || next.startsWith('//')) {
+    next = '/dashboard'
+  }
 
   console.log('[Auth Callback] URL:', requestUrl.href)
   console.log('[Auth Callback] Code:', code ? 'present' : 'missing')
