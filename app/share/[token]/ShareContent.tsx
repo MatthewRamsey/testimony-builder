@@ -195,7 +195,7 @@ export function ShareContent({ token }: ShareContentProps) {
                   disabled={claimSending}
                   className="rounded-lg bg-white px-6 py-3 text-sm font-bold text-indigo-600 shadow-lg transition-all hover:bg-indigo-50 disabled:cursor-not-allowed disabled:opacity-70"
                 >
-                  {claimSending ? 'Saving...' : 'Save Email'}
+                  {claimSending ? 'Saving...' : 'Save Testimony'}
                 </button>
               </form>
 
