@@ -58,4 +58,34 @@
   }
 }
 
+@layer utilities {
+  @keyframes pen-land {
+    0% {
+      opacity: 1;
+      transform: translate(var(--pen-start-x, 0px), var(--pen-start-y, 0px))
+        scale(var(--pen-start-scale, 3.5));
+    }
+    100% {
+      opacity: 1;
+      transform: translate(0, 0) scale(1);
+    }
+  }
 
+  @keyframes pen-color-shift {
+    0% {
+      color: rgba(255, 255, 255, 0.95);
+    }
+    100% {
+      color: rgb(79 70 229);
+    }
+  }
+
+  .pen-flight {
+    animation: pen-land var(--pen-flight-duration, 1.4s)
+        cubic-bezier(0.2, 0.7, 0.2, 1) forwards,
+      pen-color-shift var(--pen-color-duration, 0.22s) ease forwards;
+    animation-delay: var(--pen-flight-delay, 0ms),
+      calc(var(--pen-flight-delay, 0ms) + var(--pen-color-delay, 0ms));
+    animation-fill-mode: both;
+  }
+}

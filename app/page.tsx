@@ -55,16 +55,68 @@ function FeatureCard({ icon, title, description, delay }: FeatureCardProps) {
 
 export default function Home() {
   const [isLoaded, setIsLoaded] = useState(false)
+  const [penReady, setPenReady] = useState(false)
+  const heroRef = useRef<HTMLDivElement>(null)
+  const heroAnchorRef = useRef<HTMLSpanElement>(null)
+  const penRef = useRef<HTMLSpanElement>(null)
+  const ctaRef = useRef<HTMLAnchorElement>(null)
 
   useEffect(() => {
     setIsLoaded(true)
   }, [])
 
+  useEffect(() => {
+    if (!isLoaded) return
+
+    let frame = 0
+    const updatePenPosition = () => {
+      if (!heroRef.current || !penRef.current || !ctaRef.current) return
+
+      const heroRect = heroRef.current.getBoundingClientRect()
+      const anchorRect = heroAnchorRef.current?.getBoundingClientRect()
+      const ctaRect = ctaRef.current.getBoundingClientRect()
+      const penRect = penRef.current.getBoundingClientRect()
+
+      if (!penRect.width || !penRect.height) return
+
+      const startX = anchorRect ? anchorRect.left + anchorRect.width / 2 : heroRect.left + heroRect.width / 2
+      const startY = anchorRect ? anchorRect.top + anchorRect.height / 2 : heroRect.top + heroRect.height * 0.25
+      const endX = penRect.left + penRect.width / 2
+      const endY = penRect.top + penRect.height / 2
+
+      penRef.current.style.setProperty('--pen-start-x', `${startX - endX}px`)
+      penRef.current.style.setProperty('--pen-start-y', `${startY - endY}px`)
+      penRef.current.style.setProperty('--pen-start-scale', '3.6')
+      penRef.current.style.setProperty('--pen-flight-duration', '1400ms')
+      penRef.current.style.setProperty('--pen-flight-delay', '2000ms')
+      penRef.current.style.setProperty('--pen-color-duration', '220ms')
+
+      const travelY = endY - startY
+      const borderY = ctaRect.top + penRect.height / 2
+      const rawProgress = travelY === 0 ? 1 : (borderY - startY) / travelY
+      const clampedProgress = Math.min(1, Math.max(0, rawProgress))
+      const colorDelayMs = Math.max(0, Math.round(1400 * clampedProgress - 650))
+      penRef.current.style.setProperty('--pen-color-delay', `${colorDelayMs}ms`)
+      setPenReady(true)
+    }
+
+    frame = window.requestAnimationFrame(updatePenPosition)
+    window.addEventListener('resize', updatePenPosition)
+
+    return () => {
+      window.cancelAnimationFrame(frame)
+      window.removeEventListener('resize', updatePenPosition)
+    }
+  }, [isLoaded])
+
   return (
     <main className="flex min-h-screen flex-col">
       <div className="flex-1">
         {/* Hero Section */}
-        <div className="relative overflow-hidden bg-gradient-to-br from-indigo-600 via-indigo-700 to-purple-800 text-white">
+        <div
+          ref={heroRef}
+          className="relative overflow-hidden bg-gradient-to-br from-indigo-600 via-indigo-700 to-purple-800 text-white"
+        >
           {/* Gradient orbs for depth */}
           <div className="absolute top-0 right-0 w-96 h-96 bg-purple-500 rounded-full blur-3xl opacity-20 -translate-y-1/2 translate-x-1/2" />
           <div className="absolute bottom-0 left-0 w-96 h-96 bg-indigo-400 rounded-full blur-3xl opacity-20 translate-y-1/2 -translate-x-1/2" />
@@ -77,11 +129,15 @@ export default function Home() {
                   isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
                 }`}
               >
-                <span className="inline-flex items-center justify-center gap-4">
-                  <PenNibIcon className="w-12 h-12 lg:w-14 lg:h-14 text-white/90 animate-gentle-float" />
+                <span className="relative inline-flex items-center">
                   <span className="bg-gradient-to-r from-white via-white to-indigo-200 bg-clip-text text-transparent">
                     Testimony Pro
                   </span>
+                  <span
+                    ref={heroAnchorRef}
+                    aria-hidden="true"
+                    className="absolute -left-[50px] top-1/2 h-6 w-6 -translate-y-1/2 opacity-0"
+                  />
                 </span>
               </h1>
 
@@ -147,8 +203,18 @@ export default function Home() {
               >
                 <Link
                   href="/create/choose-framework"
-                  className="group rounded-xl bg-white px-8 py-4 text-lg font-bold text-indigo-600 shadow-lg shadow-indigo-900/30 hover:bg-indigo-50 hover:shadow-xl hover:shadow-indigo-900/40 hover:-translate-y-0.5 transition-all duration-300 inline-flex items-center justify-center gap-2"
+                  ref={ctaRef}
+                  className="group relative rounded-xl bg-white px-8 py-4 text-lg font-bold text-indigo-600 shadow-lg shadow-indigo-900/30 hover:bg-indigo-50 hover:shadow-xl hover:shadow-indigo-900/40 hover:-translate-y-0.5 transition-all duration-300 inline-flex items-center justify-center gap-2 overflow-visible"
                 >
+                  <span
+                    ref={penRef}
+                    aria-hidden="true"
+                    className={`inline-flex w-5 h-5 origin-center text-white motion-reduce:text-indigo-600 ${
+                      penReady ? 'pen-flight motion-reduce:animate-none' : 'opacity-0'
+                    }`}
+                  >
+                    <PenNibIcon className="w-5 h-5" />
+                  </span>
                   Start Writing Now
                   <svg
                     className="w-5 h-5 group-hover:translate-x-1 transition-transform"

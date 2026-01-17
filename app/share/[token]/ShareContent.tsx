@@ -22,6 +22,10 @@ export function ShareContent({ token }: ShareContentProps) {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [linkCopied, setLinkCopied] = useState(false)
+  const [claimEmail, setClaimEmail] = useState('')
+  const [claimSending, setClaimSending] = useState(false)
+  const [claimError, setClaimError] = useState<string | null>(null)
+  const [claimSent, setClaimSent] = useState(false)
 
   useEffect(() => {
     fetchTestimony()
@@ -90,6 +94,35 @@ export function ShareContent({ token }: ShareContentProps) {
     }
   }
 
+  const handleClaimSubmit = async (event: React.FormEvent) => {
+    event.preventDefault()
+    setClaimSending(true)
+    setClaimError(null)
+    setClaimSent(false)
+
+    try {
+      const response = await fetch('/api/users/anonymous/claim-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          shareToken: token,
+          email: claimEmail,
+        }),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Unable to save email')
+      }
+
+      setClaimSent(true)
+    } catch (err) {
+      setClaimError(err instanceof Error ? err.message : 'Unable to save email')
+    } finally {
+      setClaimSending(false)
+    }
+  }
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -141,17 +174,43 @@ export function ShareContent({ token }: ShareContentProps) {
                 Claim Your Testimony
               </h2>
               <p className="text-xl mb-8 max-w-2xl mx-auto leading-relaxed">
-                You created this testimony anonymously. Sign up now to save it permanently,
-                edit it anytime, and access it from any device.
+                You created this testimony anonymously. Add your email so we can connect it to your
+                account when you sign in later.
               </p>
 
-              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-6">
-                <Link
-                  href={`/login?claim=${token}`}
-                  className="bg-white text-indigo-600 px-10 py-4 rounded-lg font-bold text-lg hover:bg-indigo-50 shadow-lg hover:shadow-xl transition-all transform hover:scale-105"
+              <form
+                onSubmit={handleClaimSubmit}
+                className="mx-auto mb-6 flex w-full max-w-xl flex-col gap-3 sm:flex-row"
+              >
+                <input
+                  type="email"
+                  required
+                  value={claimEmail}
+                  onChange={(event) => setClaimEmail(event.target.value)}
+                  className="w-full rounded-lg border border-white/40 bg-white/90 px-4 py-3 text-sm text-indigo-900 placeholder-indigo-400 focus:outline-none focus:ring-2 focus:ring-white"
+                  placeholder="Enter your email to claim this testimony"
+                />
+                <button
+                  type="submit"
+                  disabled={claimSending}
+                  className="rounded-lg bg-white px-6 py-3 text-sm font-bold text-indigo-600 shadow-lg transition-all hover:bg-indigo-50 disabled:cursor-not-allowed disabled:opacity-70"
                 >
-                  Sign Up & Claim This Testimony
-                </Link>
+                  {claimSending ? 'Saving...' : 'Save Email'}
+                </button>
+              </form>
+
+              {claimError && (
+                <div className="mx-auto mb-4 max-w-xl rounded-lg bg-white/90 px-4 py-3 text-sm text-red-700">
+                  {claimError}
+                </div>
+              )}
+              {claimSent && (
+                <div className="mx-auto mb-4 max-w-xl rounded-lg bg-white/90 px-4 py-3 text-sm text-indigo-700">
+                  Email saved. When you sign in later, we will link this testimony to your account.
+                </div>
+              )}
+
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-6">
                 <button
                   onClick={handleCopyLink}
                   className="bg-indigo-500 bg-opacity-30 backdrop-blur text-white px-8 py-4 rounded-lg font-semibold hover:bg-opacity-40 transition-all border border-white border-opacity-30"
@@ -175,7 +234,7 @@ export function ShareContent({ token }: ShareContentProps) {
               </div>
 
               <p className="text-sm text-indigo-100">
-                Free account  Takes 30 seconds  No credit card required
+                Free account. Takes 30 seconds. No credit card required.
               </p>
             </div>
           </div>

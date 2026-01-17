@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/route-handler'
+import { createAdminClient } from '@/lib/supabase/admin'
 
 export const dynamic = 'force-dynamic'
 
@@ -34,6 +35,49 @@ export async function GET(request: NextRequest) {
       // Get the response with cookies set by exchangeCodeForSession
       const response = getResponse()
 
+      if (!claimToken && data.user?.email) {
+        try {
+          const adminClient = createAdminClient()
+          const normalizedEmail = data.user.email.toLowerCase()
+
+          const { data: anonymousUsers, error: anonymousError } = await adminClient
+            .from('anonymous_user_tracking')
+            .select('user_id')
+            .eq('email', normalizedEmail)
+            .eq('has_claimed', false)
+
+          if (anonymousError) {
+            console.error('[Auth Callback] Error fetching anonymous users:', anonymousError)
+          } else if (anonymousUsers && anonymousUsers.length > 0) {
+            const anonymousIds = anonymousUsers.map((row) => row.user_id)
+
+            const { error: claimError } = await adminClient
+              .from('testimonies')
+              .update({
+                user_id: data.user.id,
+                is_claimed: true,
+                claimed_at: new Date().toISOString(),
+              })
+              .in('user_id', anonymousIds)
+
+            if (claimError) {
+              console.error('[Auth Callback] Error claiming testimonies:', claimError)
+            } else {
+              const { error: trackingError } = await adminClient
+                .from('anonymous_user_tracking')
+                .update({ has_claimed: true })
+                .in('user_id', anonymousIds)
+
+              if (trackingError) {
+                console.error('[Auth Callback] Error updating tracking:', trackingError)
+              }
+            }
+          }
+        } catch (error) {
+          console.error('[Auth Callback] Email claim fallback error:', error)
+        }
+      }
+
       // If this is a claim flow, redirect to claim processing page
       const finalDestination = claimToken
         ? `/auth/claim-process?token=${claimToken}`
@@ -58,4 +102,3 @@ export async function GET(request: NextRequest) {
   console.error('[Auth Callback] No code provided or session creation failed')
   return NextResponse.redirect(new URL('/login?error=invalid_token', request.url))
 }
-

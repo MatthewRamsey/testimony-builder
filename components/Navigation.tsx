@@ -60,7 +60,9 @@ export function Navigation() {
         <div className="flex justify-between h-16">
           <div className="flex">
             <Link href="/" className="group flex items-center gap-2 px-2 py-2">
-              <PenNibIcon className="w-7 h-7 text-indigo-600 group-hover:text-indigo-700 transition-colors" />
+              <span id="nav-pen-icon" className="inline-flex">
+                <PenNibIcon className="w-7 h-7 text-indigo-600 group-hover:text-indigo-700 transition-colors" />
+              </span>
               <span className="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
                 Testimony Pro
               </span>
@@ -146,4 +148,3 @@ export function Navigation() {
     </nav>
   )
 }
-
