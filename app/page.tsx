@@ -56,8 +56,10 @@ function FeatureCard({ icon, title, description, delay }: FeatureCardProps) {
 export default function Home() {
   const [isLoaded, setIsLoaded] = useState(false)
   const [penReady, setPenReady] = useState(false)
+  const penFlightDelayMs = 2000
   const heroRef = useRef<HTMLDivElement>(null)
-  const heroAnchorRef = useRef<HTMLSpanElement>(null)
+  const heroDesktopAnchorRef = useRef<HTMLSpanElement>(null)
+  const heroMobileAnchorRef = useRef<HTMLSpanElement>(null)
   const penRef = useRef<HTMLSpanElement>(null)
   const ctaRef = useRef<HTMLAnchorElement>(null)
 
@@ -73,7 +75,10 @@ export default function Home() {
       if (!heroRef.current || !penRef.current || !ctaRef.current) return
 
       const heroRect = heroRef.current.getBoundingClientRect()
-      const anchorRect = heroAnchorRef.current?.getBoundingClientRect()
+      const anchorRect =
+        [heroMobileAnchorRef.current, heroDesktopAnchorRef.current]
+          .map((anchor) => anchor?.getBoundingClientRect())
+          .find((rect) => rect && rect.width > 0 && rect.height > 0) ?? null
       const ctaRect = ctaRef.current.getBoundingClientRect()
       const penRect = penRef.current.getBoundingClientRect()
 
@@ -88,7 +93,7 @@ export default function Home() {
       penRef.current.style.setProperty('--pen-start-y', `${startY - endY}px`)
       penRef.current.style.setProperty('--pen-start-scale', '3.6')
       penRef.current.style.setProperty('--pen-flight-duration', '1400ms')
-      penRef.current.style.setProperty('--pen-flight-delay', '2000ms')
+      penRef.current.style.setProperty('--pen-flight-delay', `${penFlightDelayMs}ms`)
       penRef.current.style.setProperty('--pen-color-duration', '220ms')
 
       const travelY = endY - startY
@@ -124,19 +129,31 @@ export default function Home() {
           <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-32">
             <div className="text-center">
               {/* Main heading with icon */}
+              <div className="sm:hidden mb-3 flex justify-center">
+                <span
+                  ref={heroMobileAnchorRef}
+                  aria-hidden="true"
+                  className={`inline-flex text-indigo-100 transition-opacity duration-700 ${
+                    penReady ? 'opacity-0' : isLoaded ? 'opacity-100' : 'opacity-0'
+                  }`}
+                  style={{ transitionDelay: penReady ? `${penFlightDelayMs}ms` : '0ms' }}
+                >
+                  <PenNibIcon className="w-10 h-10" />
+                </span>
+              </div>
               <h1
                 className={`text-5xl lg:text-6xl font-extrabold mb-6 transition-all duration-700 ${
                   isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
                 }`}
               >
                 <span className="relative inline-flex items-center">
-                  <span className="bg-gradient-to-r from-white via-white to-indigo-200 bg-clip-text text-transparent">
+                  <span className="bg-gradient-to-r from-white via-white to-indigo-200 bg-clip-text text-transparent pb-1">
                     Testimony Pro
                   </span>
                   <span
-                    ref={heroAnchorRef}
+                    ref={heroDesktopAnchorRef}
                     aria-hidden="true"
-                    className="absolute -left-[50px] top-1/2 h-6 w-6 -translate-y-1/2 opacity-0"
+                    className="absolute -left-[50px] top-1/2 h-6 w-6 -translate-y-1/2 opacity-0 hidden sm:inline"
                   />
                 </span>
               </h1>

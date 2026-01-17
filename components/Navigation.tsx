@@ -57,17 +57,23 @@ export function Navigation() {
   const isCreateRoute = pathname.startsWith('/create')
   const isSaveIntentRoute = pathname === '/login' && searchParams.get('intent') === 'save_testimony'
   const isShareRoute = pathname.startsWith('/share/')
+  const isHomeRoute = pathname === '/'
+  const isLoginRoute = pathname === '/login'
+  const isGalleryRoute = pathname === '/gallery'
 
   return (
     <nav className="bg-white shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex">
-            <Link href="/" className="group flex items-center gap-2 px-2 py-2">
+            <Link
+              href="/"
+              className="group flex flex-col items-center gap-1 px-2 py-2 sm:flex-row sm:gap-2"
+            >
               <span id="nav-pen-icon" className="inline-flex">
                 <PenNibIcon className="w-7 h-7 text-indigo-600 group-hover:text-indigo-700 transition-colors" />
               </span>
-              <span className="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+              <span className="text-center text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent sm:text-left">
                 Testimony Pro
               </span>
             </Link>
@@ -118,8 +124,15 @@ export function Navigation() {
                 <div className="w-24 h-8 bg-gray-200 animate-pulse rounded"></div>
               </div>
             ) : user && isAnonymous ? (
-              // Anonymous user: Show prominent "Sign Up to Save" button
-              isCreateRoute || isSaveIntentRoute || isShareRoute ? null : (
+              // Anonymous user: show Sign In on home, otherwise CTA unless hidden.
+              isCreateRoute || isSaveIntentRoute || isShareRoute || isLoginRoute || isGalleryRoute ? null : isHomeRoute ? (
+                <Link
+                  href="/login"
+                  className="px-4 py-2 text-sm font-medium text-indigo-600 hover:text-indigo-500 border border-indigo-600 rounded-md hover:bg-indigo-50 transition-colors"
+                >
+                  Sign In
+                </Link>
+              ) : (
                 <Link
                   href="/login?intent=save_testimony"
                   className="px-4 py-2 text-sm font-bold text-white bg-gradient-to-r from-indigo-600 to-purple-600 rounded-lg hover:from-indigo-700 hover:to-purple-700 shadow-md hover:shadow-lg transition-all"
