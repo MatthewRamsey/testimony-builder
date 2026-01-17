@@ -109,6 +109,7 @@ export default function EditTestimonyPage() {
             initialFramework={testimony.framework_type}
             initialContent={testimony.content}
             initialIsPublic={testimony.is_public}
+            shareToken={testimony.share_token}
             onSave={handleSave}
             isLoading={isSaving}
           />
@@ -117,5 +118,4 @@ export default function EditTestimonyPage() {
     </div>
   )
 }
-
 

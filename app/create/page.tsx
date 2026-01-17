@@ -155,7 +155,7 @@ function CreateTestimonyContent() {
                   You&apos;re creating anonymously
                 </h3>
                 <p className="mt-1 text-sm text-indigo-700">
-                  Your testimony will be saved temporarily. Sign up after completion to claim it permanently and unlock AI editing features.
+                  Your testimony will be saved temporarily. Sign up after completion to claim it permanently and access it from any device.
                 </p>
               </div>
             </div>
@@ -195,7 +195,6 @@ function CreateTestimonyContent() {
           <TestimonyEditor
             onSave={handleSave}
             isLoading={isLoading}
-            isAnonymous={isAnonymous}
             initialFramework={frameworkParam || undefined}
           />
         </div>
