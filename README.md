@@ -1,6 +1,6 @@
-# Personal Testimony Builder
+# Testimony Pro
 
-A web application for crafting personal faith testimonies with guided storytelling frameworks, PDF export, and premium AI editing features.
+A web application for crafting personal faith testimonies with guided storytelling frameworks and PDF export.
 
 ## Features
 
@@ -11,10 +11,7 @@ A web application for crafting personal faith testimonies with guided storytelli
   - Seasons of Growth / Challenges / Lessons
   - Free-Form Narrative
 - **PDF Export** - Export testimonies as PDFs
-- **Premium Features** (via Stripe):
-  - AI-powered editing suggestions
-  - Public gallery sharing
-  - Enhanced templates
+- **Public Gallery Sharing** - Share testimonies with the community
 
 ## Tech Stack
 
@@ -23,7 +20,6 @@ A web application for crafting personal faith testimonies with guided storytelli
 - **Backend**: Next.js API Routes + Server Actions
 - **Database**: Supabase (PostgreSQL)
 - **Authentication**: Supabase Auth (Magic Links)
-- **AI**: Vercel AI SDK (OpenAI)
 - **Payments**: Stripe
 - **PDF Export**: @react-pdf/renderer
 - **Deployment**: Vercel
@@ -34,8 +30,7 @@ A web application for crafting personal faith testimonies with guided storytelli
 
 - Node.js 18+ and pnpm/npm
 - Supabase account
-- Stripe account (for premium features)
-- OpenAI API key (for AI features)
+- Stripe account (for payments)
 
 ### Installation
 
@@ -65,7 +60,6 @@ SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
 STRIPE_SECRET_KEY=your_stripe_secret_key
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=your_stripe_publishable_key
 STRIPE_WEBHOOK_SECRET=your_stripe_webhook_secret
-OPENAI_API_KEY=your_openai_api_key
 NEXT_PUBLIC_APP_URL=http://localhost:3000
 ```
 
@@ -100,7 +94,6 @@ testimony-builder/
 │   ├── user/
 │   └── subscription/
 ├── infrastructure/        # Infrastructure layer
-│   ├── ai/               # AI providers
 │   ├── export/           # Export providers
 │   ├── payment/          # Payment providers
 │   └── database/        # Database repositories
@@ -151,5 +144,3 @@ pnpm test:watch
 ## License
 
 MIT
-
-

@@ -6,7 +6,7 @@ import { Navigation } from "@/components/Navigation";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Personal Testimony Builder",
+  title: "Testimony Pro",
   description: "Craft your personal faith testimony with guided storytelling frameworks",
 };
 
@@ -24,4 +24,3 @@ export default function RootLayout({
     </html>
   );
 }
-
