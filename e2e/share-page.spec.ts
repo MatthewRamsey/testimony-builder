@@ -232,22 +232,96 @@ test.describe('Share Page - Social Sharing', () => {
   })
 })
 
+test.describe('Share Page - Anonymous Email Capture', () => {
+  test('should save email without requiring a magic link', async ({ page }) => {
+    const token = 'claim-token'
+    const testimony = {
+      id: 'test-claim-123',
+      user_id: 'anon-user-123',
+      title: 'Saved for Later',
+      framework_type: 'free_form',
+      content: { narrative: 'Short testimony content.' },
+      is_public: false,
+      share_token: token,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    }
+
+    await page.route('**/api/testimonies/share/*', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          testimony,
+          isOwner: false,
+          isAnonymous: true,
+        }),
+      })
+    })
+
+    let claimRequestBody: any = null
+    await page.route('**/api/users/anonymous/claim-email', async (route) => {
+      claimRequestBody = route.request().postDataJSON()
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ success: true }),
+      })
+    })
+
+    await page.goto(`/share/${token}`)
+    await page.waitForLoadState('networkidle')
+
+    await expect(
+      page.getByText(
+        /Free account\. Takes 30 seconds\. No credit card required\./i
+      )
+    ).toBeVisible()
+
+    const claimLink = page.getByRole('link', { name: /sign up & claim/i })
+    await expect(claimLink).toHaveCount(0)
+
+    const emailInput = page.getByPlaceholder('Enter your email to claim this testimony')
+    await expect(emailInput).toBeVisible()
+    await emailInput.fill('user@example.com')
+
+    await Promise.all([
+      page.waitForResponse('**/api/users/anonymous/claim-email'),
+      page.getByRole('button', { name: /save email/i }).click(),
+    ])
+
+    await expect(
+      page.getByText(/Email saved\. When you sign in later/i)
+    ).toBeVisible()
+
+    expect(claimRequestBody).toEqual({
+      shareToken: token,
+      email: 'user@example.com',
+    })
+  })
+})
+
 test.describe('Share Page - Open Graph Meta Tags', () => {
   test('should have Open Graph meta tags in head', async ({ page }) => {
     await page.goto('/share/test-token')
     await page.waitForLoadState('domcontentloaded')
 
     const ogTitleHandle = await page.$('meta[property="og:title"]')
-    if (!ogTitleHandle) {
+    const ogDescriptionHandle = await page.$('meta[property="og:description"]')
+    const ogUrlHandle = await page.$('meta[property="og:url"]')
+    const ogImageHandle = await page.$('meta[property="og:image"]')
+    const ogTypeHandle = await page.$('meta[property="og:type"]')
+
+    if (!ogTitleHandle || !ogDescriptionHandle || !ogUrlHandle || !ogImageHandle || !ogTypeHandle) {
       test.skip(true, 'Open Graph tags not present for this share token')
       return
     }
 
     const ogTitle = await ogTitleHandle.getAttribute('content')
-    const ogDescription = await page.$eval('meta[property="og:description"]', (el) => el.getAttribute('content'))
-    const ogUrl = await page.$eval('meta[property="og:url"]', (el) => el.getAttribute('content'))
-    const ogImage = await page.$eval('meta[property="og:image"]', (el) => el.getAttribute('content'))
-    const ogType = await page.$eval('meta[property="og:type"]', (el) => el.getAttribute('content'))
+    const ogDescription = await ogDescriptionHandle.getAttribute('content')
+    const ogUrl = await ogUrlHandle.getAttribute('content')
+    const ogImage = await ogImageHandle.getAttribute('content')
+    const ogType = await ogTypeHandle.getAttribute('content')
 
     // If OG tags are present (testimony loaded successfully)
     if (ogTitle) {
@@ -264,15 +338,19 @@ test.describe('Share Page - Open Graph Meta Tags', () => {
     await page.waitForLoadState('domcontentloaded')
 
     const twitterCardHandle = await page.$('meta[name="twitter:card"]')
-    if (!twitterCardHandle) {
+    const twitterTitleHandle = await page.$('meta[name="twitter:title"]')
+    const twitterDescriptionHandle = await page.$('meta[name="twitter:description"]')
+    const twitterImageHandle = await page.$('meta[name="twitter:image"]')
+
+    if (!twitterCardHandle || !twitterTitleHandle || !twitterDescriptionHandle || !twitterImageHandle) {
       test.skip(true, 'Twitter tags not present for this share token')
       return
     }
 
     const twitterCard = await twitterCardHandle.getAttribute('content')
-    const twitterTitle = await page.$eval('meta[name="twitter:title"]', (el) => el.getAttribute('content'))
-    const twitterDescription = await page.$eval('meta[name="twitter:description"]', (el) => el.getAttribute('content'))
-    const twitterImage = await page.$eval('meta[name="twitter:image"]', (el) => el.getAttribute('content'))
+    const twitterTitle = await twitterTitleHandle.getAttribute('content')
+    const twitterDescription = await twitterDescriptionHandle.getAttribute('content')
+    const twitterImage = await twitterImageHandle.getAttribute('content')
 
     // If Twitter tags are present (testimony loaded successfully)
     if (twitterCard) {
