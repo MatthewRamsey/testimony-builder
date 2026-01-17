@@ -56,16 +56,12 @@ function LoginForm() {
 
   const getHeading = () => {
     if (claimToken) return "Claim Your Testimony"
-    if (intent === 'ai_editing') return "Sign Up to Unlock AI Features"
     return "Sign in to your account"
   }
 
   const getSubheading = () => {
     if (claimToken) {
       return "Create an account to save your testimony permanently and unlock all features"
-    }
-    if (intent === 'ai_editing') {
-      return "Access AI-powered editing suggestions to enhance your testimony"
     }
     return "We'll send you a magic link to sign in"
   }
@@ -162,12 +158,6 @@ function LoginForm() {
                 </svg>
                 Edit and update anytime, from any device
               </li>
-              <li className="flex items-center text-sm text-gray-700">
-                <svg className="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                </svg>
-                AI-powered editing (with Premium)
-              </li>
             </ul>
           </div>
         )}
@@ -183,5 +173,4 @@ export default function LoginPage() {
     </Suspense>
   )
 }
-
 
