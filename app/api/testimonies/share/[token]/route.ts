@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getAuthUser } from '@/lib/auth/middleware'
-import { SupabaseTestimonyRepository } from '@/infrastructure/database/supabase/repositories/SupabaseTestimonyRepository'
 import { AnonymousUserService } from '@/domain/user/services/AnonymousUserService'
+import { createAdminClient } from '@/lib/supabase/admin'
 
 export const dynamic = 'force-dynamic'
 
@@ -16,8 +16,28 @@ export async function GET(
   { params }: { params: { token: string } }
 ) {
   try {
-    const repository = new SupabaseTestimonyRepository()
-    const testimony = await repository.findByShareToken(params.token)
+    const supabase = createAdminClient()
+    const { data, error } = await supabase
+      .from('testimonies')
+      .select()
+      .eq('share_token', params.token)
+      .single()
+
+    if (error) {
+      if (error.code === 'PGRST116') {
+        return NextResponse.json(
+          { error: 'Testimony not found' },
+          { status: 404 }
+        )
+      }
+      throw new Error(error.message)
+    }
+
+    const testimony = {
+      ...data,
+      created_at: new Date(data.created_at),
+      updated_at: new Date(data.updated_at),
+    }
 
     if (!testimony) {
       return NextResponse.json(
